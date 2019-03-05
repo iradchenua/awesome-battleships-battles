@@ -19,6 +19,25 @@ class GameRepository extends ServiceEntityRepository
         parent::__construct($registry, Game::class);
     }
 
+    public function getGameForUserId($userId)
+    {
+        $query = $this->createQueryBuilder('g')
+            ->where("(g.userId1 = :userId or g.userId2 = :userId) 
+                                   and (g.status=:waitingStatus or g.status=:playStatus)")
+            ->setParameter('userId', $userId)
+            ->setParameter('playStatus', Game::STATUS_PLAY)
+            ->setParameter('waitingStatus', Game::STATUS_WAITING)
+            ->getQuery();
+        return ($query->setMaxResults(1)->getOneOrNullResult());
+    }
+    public function getFreeGame()
+    {
+        $query = $this->createQueryBuilder('g')
+            ->where('g.userId2 is NULL and g.status=:status')
+            ->setParameter('status', Game::STATUS_WAITING)
+            ->getQuery();
+        return ($query->setMaxResults(1)->getOneOrNullResult());
+    }
     // /**
     //  * @return Game[] Returns an array of Game objects
     //  */

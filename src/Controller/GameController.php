@@ -33,16 +33,7 @@ class GameController extends AbstractController
         $doctrine = $this->getDoctrine();
         $repository = $doctrine
             ->getRepository(Game::class);
-
-        $query = $repository->createQueryBuilder('g')
-            ->where("(g.userId1 = :userId or g.userId2 = :userId) 
-                                   and (g.status=:waitingStatus or g.status=:playStatus)")
-            ->setParameter('userId', $userId)
-            ->setParameter('playStatus', Game::STATUS_PLAY)
-            ->setParameter('waitingStatus', Game::STATUS_WAITING)
-            ->getQuery();
-
-        $game = $query->setMaxResults(1)->getOneOrNullResult();
+        $game = $repository->getGameForUserId($userId);
 
         if ($game == null)
             return $this->redirectToRoute('lobby');
