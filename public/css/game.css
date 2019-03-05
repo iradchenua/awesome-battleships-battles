@@ -1,0 +1,9 @@
+
+canvas {
+    background-color: white;
+    display: block;
+    margin: 0 auto;
+}
+#jsInfo {
+    display: none;
+}
