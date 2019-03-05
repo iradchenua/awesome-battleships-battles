@@ -10,6 +10,13 @@
     <body>
         {% block body %}
             <h1>Welcome to the game!</h1>
+            {% if app.request.hasPreviousSession %}
+                {% for message in app.flashes('error') %}
+                    <div class="flash-notice">
+                        <h3 style="color: red">{{ message }}</h3>
+                    </div>
+                {% endfor %}
+            {% endif %}
         {% endblock %}
         {% block javascripts %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>

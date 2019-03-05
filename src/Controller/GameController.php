@@ -35,9 +35,11 @@ class GameController extends AbstractController
             ->getRepository(Game::class);
 
         $query = $repository->createQueryBuilder('g')
-            ->where("g.userId1 = :userId or g.userId2 = :userId and g.status=:status")
+            ->where("(g.userId1 = :userId or g.userId2 = :userId) 
+                                   and (g.status=:waitingStatus or g.status=:playStatus)")
             ->setParameter('userId', $userId)
-            ->setParameter('status', Game::STATUS_PLAY)
+            ->setParameter('playStatus', Game::STATUS_PLAY)
+            ->setParameter('waitingStatus', Game::STATUS_WAITING)
             ->getQuery();
 
         $game = $query->setMaxResults(1)->getOneOrNullResult();
@@ -66,7 +68,8 @@ class GameController extends AbstractController
     }
     private function onFormSubmited(&$game, $entityManager)
     {
-        $entityManager->remove($game);
+        $game->setStatus(Game::STATUS_END);
+        $entityManager->persist($game);
         $entityManager->flush();
         return $this->redirect('lobby');
     }

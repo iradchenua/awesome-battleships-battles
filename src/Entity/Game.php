@@ -14,6 +14,7 @@ class Game
 {
     public const STATUS_WAITING = 'waiting';
     public const STATUS_PLAY = 'play';
+    public const STATUS_END = 'end';
     /**
      * @var int
      *
