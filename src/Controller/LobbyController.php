@@ -36,7 +36,9 @@ class LobbyController extends AbstractController
         $form = $this->createFormBuilder()
             ->add('play', SubmitType::class)
             ->getForm();
+
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid())
            return $this->onFormSubmited($doctrine, $repository, $userId);
 
