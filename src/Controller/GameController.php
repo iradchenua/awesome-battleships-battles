@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Entity\User;
 use App\Entity\Game;
+use App\Entity\Ship;
 
 class GameController extends AbstractController
 {
@@ -38,6 +39,10 @@ class GameController extends AbstractController
         if ($game == null)
             return $this->redirectToRoute('lobby');
 
+        if ($game->getStatus() == Game::STATUS_PLAY)
+            $this->onPlay($userId, $game->getId(),
+                $doctrine->getRepository(Ship::class));
+
         $form = $this->createFormBuilder()
             ->add('leave', SubmitType::class)
             ->getForm();
@@ -56,6 +61,11 @@ class GameController extends AbstractController
                 'userId1' => $game->getUserId1(),
                 'userId2' => $game->getUserId2()
         ]);
+    }
+    private function onPlay($userId, $gameId, $shipRepository)
+    {
+        $ships = $shipRepository->getShipsForUser($gameId, $userId);
+        print_r($ships);
     }
     private function onFormSubmited(&$game, $entityManager)
     {

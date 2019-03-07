@@ -1,13 +1,11 @@
 
-function SpaceShip(width, height,
-                   x, y, ctx, color, X_STEP, Y_STEP) {
-    this.width = X_STEP * width;
-    this.height = Y_STEP * height;
-    this.x = x;
-    this.y = y;
-    this.ctx = ctx;
-    this.color = color;
-
+function SpaceShip(params) {
+    for(let prop in params) {
+        if (params.hasOwnProperty(prop))
+            this[prop] = params[prop];
+    }
+    this.width *= this.X_STEP;
+    this.height *= this.Y_STEP;
     this.draw();
 }
 
@@ -35,5 +33,15 @@ $(document).ready(function() {
     const Y_STEP = canvas.height / GAME_FIELD_HEIGHT;
 
     drawGrid(canvas, ctx, X_STEP, Y_STEP);
-    let spaceShip = new SpaceShip(10, 10, 0, 0, ctx, '#FF0000', X_STEP, Y_STEP);
+    const shipParams = {
+        'width': 10,
+        'height': 10,
+        'x': 0,
+        'y': 0,
+        'ctx': ctx,
+        'color': '#FF0000',
+        'X_STEP': X_STEP,
+        'Y_STEP': Y_STEP
+    };
+    let spaceShip = new SpaceShip(shipParams);
 });

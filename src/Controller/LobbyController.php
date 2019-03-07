@@ -16,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Entity\User;
 use App\Entity\Game;
+use App\Entity\Ship;
+use App\Entity\ShipFactory;
 
 class LobbyController extends AbstractController
 {
@@ -54,9 +56,9 @@ class LobbyController extends AbstractController
         $entityManager = $doctrine->getManager();
 
         if ($form->get('create game')->isClicked())
-            $game = $this->onCreateGame($userId);
+            $game = $this->onCreateGame($entityManager, $userId);
         else
-            $game = $this->onSearch($repository, $userId);
+            $game = $this->onSearch($entityManager, $repository, $userId);
 
         if ($game == null) {
             $this->addFlash('error', 'there are not available games :( ');
@@ -64,20 +66,34 @@ class LobbyController extends AbstractController
         }
 
         $entityManager->persist($game);
+        if ($game->getStatus() == Game::STATUS_PLAY) {
+            $this->giveShipsToUser($entityManager, $game->getId(),  $game->getUserId1() , [
+                'redship' => [
+                    'x' => 0,
+                    'y' => 0,
+                ]
+            ]);
+            $this->giveShipsToUser($entityManager, $game->getId(),  $game->getUserId2(), [
+                'redship' => [
+                    'x' => 140,
+                    'y' => 0,
+                ]
+            ]);
+        }
         $entityManager->flush();
 
         return $this->redirectToRoute('game');
-
     }
-    private function onCreateGame($userId)
+    private function onCreateGame($entityManager, $userId)
     {
         $game = new Game();
         $game->setUserId1($userId);
         $game->setStatus(Game::STATUS_WAITING);
+
         return $game;
 
     }
-    private function onSearch($repository, $userId)
+    private function onSearch($entityManager, $repository, $userId)
     {
         $game = $repository->getFreeGame();
 
@@ -86,6 +102,15 @@ class LobbyController extends AbstractController
 
         $game->setUserId2($userId);
         $game->setStatus(Game::STATUS_PLAY);
+
         return $game;
+    }
+    private function giveShipsToUser($entityManager, $gameId, $userId, $typeCordsPairs)
+    {
+        foreach($typeCordsPairs as $type => $cords) {
+            $ship = ShipFactory::createShip($type, $gameId, $userId, $cords['x'], $cords['y']);
+            $entityManager->persist($ship);
+        }
+
     }
 }
