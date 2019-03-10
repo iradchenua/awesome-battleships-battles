@@ -1,0 +1,69 @@
+<script>
+    class SpaceShip {
+        constructor(params) {
+            for (let prop in params) {
+                if (params.hasOwnProperty(prop)) {
+                    this[prop] = params[prop];
+                }
+            }
+            this.draw();
+        }
+        draw() {
+            this.canvas.drawShip(this);
+        }
+    }
+
+    class Canvas {
+        constructor(params) {
+            this.canvas = params.canvas;
+            this.ctx = this.canvas.getContext('2d',  { alpha: false });
+            this.xStep = this.canvas.width / params.gameFieldWidth;
+            this.yStep = this.canvas.height / params.gameFieldHeight;
+
+            this.drawGrid();
+        }
+        drawGrid() {
+            const canvas = this.canvas;
+            this.ctx.strokeStyle = "#FFFFFF";
+            for(let x = 0; x < canvas.width ; x += this.xStep)
+                this.ctx.strokeRect(x, 0, this.xStep, canvas.height);
+            for(let y = 0; y < canvas.width ; y += this.yStep)
+                this.ctx.strokeRect(0, y, canvas.width, this.yStep);
+        }
+        drawShip(ship) {
+            this.ctx.fillStyle = ship.color;
+            this.ctx.fillRect(this.xStep * ship.x, this.yStep * ship.y,
+                this.xStep * ship.width, this.yStep * ship.height);
+
+        }
+    }
+
+    function parseJSON(str) {
+        return (JSON.parse(str.replace(/&quot;|\\&quot;/g, '"')));
+    }
+
+    $(document).ready(function() {
+
+        const jsInfo = $('#jsInfo');
+
+        const GAME_FIELD_WIDTH = jsInfo.data('gameFieldWidth');
+        const GAME_FIELD_HEIGHT = jsInfo.data('gameFieldHeight');
+
+        const canvas = new Canvas({
+            "canvas": $('#cnv').get(0),
+            "gameFieldWidth": GAME_FIELD_WIDTH,
+            "gameFieldHeight": GAME_FIELD_HEIGHT
+        });
+
+        const shipsFromServer = parseJSON("{{ ships }}");
+        const ships = [];
+        for(let prop in shipsFromServer) {
+            if (shipsFromServer.hasOwnProperty(prop)) {
+                shipsFromServer[prop].forEach(function(shipParams) {
+                    shipParams.canvas = canvas;
+                    ships.push(new SpaceShip(shipParams));
+                });
+            }
+        }
+    });
+</script>

@@ -12,10 +12,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use App\Entity\User;
 use App\Entity\Game;
 use App\Entity\Ship;
+use App\Entity\Fleet;
+use App\Entity\TurnFormHandler;
 
 class GameController extends AbstractController
 {
@@ -23,6 +29,10 @@ class GameController extends AbstractController
     private const CANVAS_HEIGHT = 600;
     private const GAME_FIELD_WIDTH = 150;
     private const GAME_FIELD_HEIGHT = 100;
+
+    private $entityManager;
+    private $game;
+
     /**
      * @Route("/game", name="game")
      */
@@ -32,46 +42,109 @@ class GameController extends AbstractController
         $userId = $user->getId();
 
         $doctrine = $this->getDoctrine();
-        $repository = $doctrine
-            ->getRepository(Game::class);
-        $game = $repository->getGameForUserId($userId);
 
-        if ($game == null)
+        $this->game = $doctrine->getRepository(Game::class)
+            ->getGameForUserId($userId);
+
+        if ($this->game == null)
             return $this->redirectToRoute('lobby');
 
-        if ($game->getStatus() == Game::STATUS_PLAY)
-            $this->onPlay($userId, $game->getId(),
-                $doctrine->getRepository(Ship::class));
+        $this->entityManager = $doctrine->getManager();
+        $ships = false;
 
-        $form = $this->createFormBuilder()
-            ->add('leave', SubmitType::class)
-            ->getForm();
+        if ($this->game->getStatus() == Game::STATUS_PLAY)
+            $ships = $this->getShips($doctrine);
 
-        $form->handleRequest($request);
+        $leaveForm = $this->createLeaveForm();
+        $leaveForm->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
-            return $this->onFormSubmited($game, $doctrine->getManager());
+        if ($leaveForm->isSubmitted() && $leaveForm->isValid()) {
+            $this->onLeaveFormSubmited();
+            return $this->redirect('lobby');
+        }
+
+        $turnForm = false;
+        $notActivatedShip = false;
+        if ($userId == $this->game->getCurrentUserId()) {
+            $turnForm = $this->createTurnForm();
+
+            $fleet = new Fleet($ships[$userId], $userId);
+            $notActivatedShip = $fleet->getNotActivatedShip();
+
+            $turnFromHandler = new TurnFormHandler($turnForm,
+                $fleet, $notActivatedShip, $this->game, $this->entityManager);
+
+            $turnForm->handleRequest($request);
+            if ($turnForm->isSubmitted() && $turnForm->isValid()) {
+                $turnFromHandler->handle($fleet, $this->game,
+                                        $this->entityManager, $notActivatedShip);
+                return $this->redirectToRoute('game');
+            }
+        }
+
+        if ($notActivatedShip)
+            $notActivatedShipName = $notActivatedShip->getName();
+        else
+            $notActivatedShipName = 'There are not free ship';
+
+        if ($ships)
+            $ships = $this->serialize($ships);
+        $leaveFormView = $leaveForm->createView();
+        $turnFormView = $turnForm ? $turnForm->createView() : false;
 
         return $this->render('game.html.twig', [
                 'width' => self::CANVAS_WIDTH,
                 'height' => self::CANVAS_HEIGHT,
                 'gameFieldWidth' => self::GAME_FIELD_WIDTH,
                 'gameFieldHeight' => self::GAME_FIELD_HEIGHT,
-                'form' => $form->createView(),
-                'userId1' => $game->getUserId1(),
-                'userId2' => $game->getUserId2()
+                'notActivatedShipName' => $notActivatedShipName,
+                'ships' => $ships,
+                'leaveForm' => $leaveFormView,
+                'turnForm' => $turnFormView,
+                'userId1' => $this->game->getUserId1(),
+                'userId2' => $this->game->getUserId2()
         ]);
     }
-    private function onPlay($userId, $gameId, $shipRepository)
+    private function getShips($doctrine)
     {
-        $ships = $shipRepository->getShipsForUser($gameId, $userId);
-        print_r($ships);
+        $gameId = $this->game->getId();
+        $shipRepository = $doctrine->getRepository(Ship::class);
+        $userId1 = $this->game->getUserId1();
+        $userId2 = $this->game->getUserId2();
+
+        return [
+            $userId1 => $shipRepository->getShipsForUser($gameId, $userId1),
+            $userId2 => $shipRepository->getShipsForUser($gameId, $userId2)
+        ];
     }
-    private function onFormSubmited(&$game, $entityManager)
+    private function createTurnForm() {
+        return ($this->createFormBuilder()
+            ->add('end turn', SubmitType::class)
+            ->add('end ship turn', SubmitType::class)
+            ->add('right', SubmitType::class)
+            ->add('left', SubmitType::class)
+            ->add('up', SubmitType::class)
+            ->add('down', SubmitType::class)
+            ->getForm());
+    }
+    private function createLeaveForm() {
+        return ($this->createFormBuilder()
+            ->add('leave', SubmitType::class)
+            ->getForm());
+    }
+    private function serialize($ships)
     {
-        $game->setStatus(Game::STATUS_END);
-        $entityManager->persist($game);
-        $entityManager->flush();
-        return $this->redirect('lobby');
+        $encodes = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+
+        $serializer = new Serializer($normalizers, $encodes);
+
+        return ($serializer->serialize($ships, 'json'));
+    }
+    private function onLeaveFormSubmited()
+    {
+        $this->game->setStatus(Game::STATUS_END);
+        $this->entityManager->persist($this->game);
+        $this->entityManager->flush();
     }
 }

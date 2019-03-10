@@ -56,7 +56,7 @@ class LobbyController extends AbstractController
         $entityManager = $doctrine->getManager();
 
         if ($form->get('create game')->isClicked())
-            $game = $this->onCreateGame($entityManager, $userId);
+            $game = $this->onCreateGame($userId);
         else
             $game = $this->onSearch($entityManager, $repository, $userId);
 
@@ -79,12 +79,13 @@ class LobbyController extends AbstractController
                     'y' => 0,
                 ]
             ]);
+            $game->setCurrentUserId($game->getUserId1());
         }
         $entityManager->flush();
 
         return $this->redirectToRoute('game');
     }
-    private function onCreateGame($entityManager, $userId)
+    private function onCreateGame($userId)
     {
         $game = new Game();
         $game->setUserId1($userId);
@@ -108,7 +109,7 @@ class LobbyController extends AbstractController
     private function giveShipsToUser($entityManager, $gameId, $userId, $typeCordsPairs)
     {
         foreach($typeCordsPairs as $type => $cords) {
-            $ship = ShipFactory::createShip($type, $gameId, $userId, $cords['x'], $cords['y']);
+            $ship = ShipFactory::createShip($type, 1, $gameId, $userId, $cords['x'], $cords['y'],false);
             $entityManager->persist($ship);
         }
 

@@ -26,8 +26,4 @@ class RedShip extends Ship
     protected const WIDTH = 10;
     protected const HEIGHT = 10;
 
-    function __construct($gameId, $userId, $x, $y)
-    {
-        parent::__construct($gameId, $userId, $x, $y);
-    }
 }

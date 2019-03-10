@@ -45,6 +45,13 @@ class Game
      */
     private $status;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="currentUserId", type="integer", nullable=true)
+     */
+    private $currentUserId;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -82,6 +89,25 @@ class Game
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getNextUserId()
+    {
+        if ($this->currentUserId == $this->userId1)
+            return $this->userId2;
+        return $this->userId1;
+    }
+
+    public function getCurrentUserId(): ?int
+    {
+        return $this->currentUserId;
+    }
+
+    public function setCurrentUserId(?int $currentUserId): self
+    {
+        $this->currentUserId = $currentUserId;
 
         return $this;
     }

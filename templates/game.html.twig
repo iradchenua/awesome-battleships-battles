@@ -8,7 +8,14 @@
     {{ parent() }}
     <p>user_id1: {{ userId1 }}</p>
     <p>user_id2: {{ userId2 ? userId2 : 'waiting' }}</p>
-    {{ form(form) }}
+    {{ form(leaveForm) }}
+
+    {%  if turnForm %}
+        {{ form(turnForm) }}
+        <p>{{ notActivatedShipName }}</p>
+    {% else %}
+        <p>Not your turn</p>
+    {% endif %}
     <canvas id="cnv" width="{{ width }}" height="{{ height }}"></canvas>
     <div id="jsInfo"
          data-game-field-width="{{ gameFieldWidth }}"
@@ -18,5 +25,7 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    <script src="js/canvasBasic.js"></script>
+    {% if ships %}
+        {{ include('gameScript.html.twig', {'ships': ships}) }}
+    {% endif %}
 {% endblock %}
