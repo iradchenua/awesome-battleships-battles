@@ -30,14 +30,8 @@ class ShipRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
         foreach($shipsFromBase as $ship) {
-            $ships[] = shipFactory::createShip($ship->getName(),
-                $ship->getId(),
-                $ship->getGameId(),
-                $ship->getUserId(),
-                $ship->getX(),
-                $ship->getY(),
-                $ship->getIsActivated()
-                );
+
+            $ships[] = shipFactory::createShip($ship->getName(), $ship->getAll());
         }
         return $ships;
     }

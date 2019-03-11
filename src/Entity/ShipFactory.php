@@ -14,8 +14,8 @@ abstract class ShipFactory
     static private $shipTypes = [
         'redship' => RedShip::class
     ];
-    static public function createShip($shipType, $id, $gameId, $userId, $x, $y, $isActivated)
+    static public function createShip($shipType, array $params)
     {
-        return new self::$shipTypes[$shipType]($id, $gameId, $userId, $x, $y, $isActivated);
+        return new self::$shipTypes[$shipType]($params);
     }
 }

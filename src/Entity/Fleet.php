@@ -32,6 +32,7 @@ class Fleet
         foreach($this->ships as $ship)
         {
             $ship->setIsActivated(false);
+            $ship->setPhase(Ship::MOVEMENT_PHASE);
             $entityManager->merge($ship);
         }
     }

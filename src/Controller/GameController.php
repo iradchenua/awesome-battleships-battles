@@ -21,7 +21,11 @@ use App\Entity\User;
 use App\Entity\Game;
 use App\Entity\Ship;
 use App\Entity\Fleet;
-use App\Entity\TurnFormHandler;
+use App\FormHandler\TurnHandler;
+use App\FormHandler\PhaseHandler\MoveHandler;
+use App\Form\Phase\Move;
+use App\Form\GameTurn;
+use App\Manager\GamePanelManager;
 
 class GameController extends AbstractController
 {
@@ -32,6 +36,10 @@ class GameController extends AbstractController
 
     private $entityManager;
     private $game;
+
+    private static $phases = [
+        Ship::MOVEMENT_PHASE => Move::class
+    ];
 
     /**
      * @Route("/game", name="game")
@@ -45,7 +53,6 @@ class GameController extends AbstractController
 
         $this->game = $doctrine->getRepository(Game::class)
             ->getGameForUserId($userId);
-
         if ($this->game == null)
             return $this->redirectToRoute('lobby');
 
@@ -59,39 +66,25 @@ class GameController extends AbstractController
         $leaveForm->handleRequest($request);
 
         if ($leaveForm->isSubmitted() && $leaveForm->isValid()) {
-            $this->onLeaveFormSubmited();
+            $this->onLeaveFormSubmitted();
             return $this->redirect('lobby');
         }
 
         $turnForm = false;
-        $notActivatedShip = false;
+        $phaseForm = false;
+        $notActivatedShipName = false;
         if ($userId == $this->game->getCurrentUserId()) {
-            $turnForm = $this->createTurnForm();
-
-            $fleet = new Fleet($ships[$userId], $userId);
-            $notActivatedShip = $fleet->getNotActivatedShip();
-
-            $turnFromHandler = new TurnFormHandler($turnForm,
-                $fleet, $notActivatedShip, $this->game, $this->entityManager);
-
-            $turnForm->handleRequest($request);
-            if ($turnForm->isSubmitted() && $turnForm->isValid()) {
-                $turnFromHandler->handle($fleet, $this->game,
-                                        $this->entityManager, $notActivatedShip);
+            $gamePanelManager = $this->onCurrentUser($ships, $userId,
+                                                $turnForm, $phaseForm, $notActivatedShipName);
+            if ($gamePanelManager->manage($request))
                 return $this->redirectToRoute('game');
-            }
         }
-
-        if ($notActivatedShip)
-            $notActivatedShipName = $notActivatedShip->getName();
-        else
-            $notActivatedShipName = 'There are not free ship';
 
         if ($ships)
             $ships = $this->serialize($ships);
         $leaveFormView = $leaveForm->createView();
         $turnFormView = $turnForm ? $turnForm->createView() : false;
-
+        $phaseFormView = $phaseForm ? $phaseForm->createView() : false;
         return $this->render('game.html.twig', [
                 'width' => self::CANVAS_WIDTH,
                 'height' => self::CANVAS_HEIGHT,
@@ -101,6 +94,7 @@ class GameController extends AbstractController
                 'ships' => $ships,
                 'leaveForm' => $leaveFormView,
                 'turnForm' => $turnFormView,
+                'phaseForm' => $phaseFormView,
                 'userId1' => $this->game->getUserId1(),
                 'userId2' => $this->game->getUserId2()
         ]);
@@ -117,20 +111,38 @@ class GameController extends AbstractController
             $userId2 => $shipRepository->getShipsForUser($gameId, $userId2)
         ];
     }
-    private function createTurnForm() {
-        return ($this->createFormBuilder()
-            ->add('end turn', SubmitType::class)
-            ->add('end ship turn', SubmitType::class)
-            ->add('right', SubmitType::class)
-            ->add('left', SubmitType::class)
-            ->add('up', SubmitType::class)
-            ->add('down', SubmitType::class)
-            ->getForm());
+
+    private function createPhaseForm($ship) {
+        $phase = $ship->getPhase();
+        return ($this->createForm(self::$phases[$phase]));
     }
+
     private function createLeaveForm() {
         return ($this->createFormBuilder()
             ->add('leave', SubmitType::class)
             ->getForm());
+    }
+    private function onCurrentUser($ships, $userId,
+                                   &$turnForm, &$phaseForm, &$notActivatedShipName)
+    {
+        $turnForm = $this->createForm(GameTurn::class);
+        $fleet = new Fleet($ships[$userId], $userId);
+        $notActivatedShip = $fleet->getNotActivatedShip();
+
+        if ($notActivatedShip) {
+            $notActivatedShipName = $notActivatedShip->getName();
+            $phaseForm = $this->createPhaseForm($notActivatedShip);
+        }
+
+        $gamePanelManager = new GamePanelManager([
+            'fleet' => $fleet,
+            'ship' => $notActivatedShip,
+            'turnForm' => $turnForm,
+            'phaseForm' => $phaseForm,
+            'game' => $this->game,
+            'entityManager' => $this->entityManager
+        ]);
+        return ($gamePanelManager);
     }
     private function serialize($ships)
     {
@@ -141,7 +153,8 @@ class GameController extends AbstractController
 
         return ($serializer->serialize($ships, 'json'));
     }
-    private function onLeaveFormSubmited()
+
+    private function onLeaveFormSubmitted()
     {
         $this->game->setStatus(Game::STATUS_END);
         $this->entityManager->persist($this->game);

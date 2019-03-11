@@ -24,6 +24,10 @@ abstract class Ship
     protected const COLOR = "none";
     protected const WIDTH = "none";
     protected const HEIGHT = "none";
+    protected const ENGINE_POWER = "none";
+    public const    ORDER_PHASE = 0;
+    public const    MOVEMENT_PHASE = 1;
+    public const    SHOOT_PHASE = 2;
 
     /**
      * @var int
@@ -68,6 +72,13 @@ abstract class Ship
      * @ORM\Column(name="is_activated", type="boolean", nullable=false)
      */
     protected $isActivated;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="phase", type="integer", nullable=false)
+     */
+    protected $phase;
 
     public function getId(): ?int
     {
@@ -154,6 +165,11 @@ abstract class Ship
         return static::HEIGHT;
     }
 
+    public function getEnginePower()
+    {
+        return static::ENGINE_POWER;
+    }
+
     public function getIsActivated(): ?bool
     {
         return $this->isActivated;
@@ -170,15 +186,40 @@ abstract class Ship
         $this->x += $xShift;
         $this->y += $yShift;
     }
-    public function __construct($id, $gameId, $userId, $x, $y, $isActivated)
+    public function __construct(array $params)
     {
-        $this->id = $id;
-        $this->gameId = $gameId;
-        $this->userId = $userId;
-        $this->x = $x;
-        $this->y = $y;
+        $this->id = $params['id'];
+        $this->gameId = $params['gameId'];
+        $this->userId = $params['userId'];
+        $this->x = $params['x'];
+        $this->y = $params['y'];
         $this->name = static::CLASS_NAME;
-        $this->isActivated = $isActivated;
+        $this->isActivated = $params['isActivated'];
+        $this->phase = $params['phase'];
     }
 
+    public function getPhase(): ?int
+    {
+        return $this->phase;
+    }
+
+    public function setPhase(int $phase): self
+    {
+        $this->phase = $phase;
+
+        return $this;
+    }
+    public function getAll(): array
+    {
+        return ([
+            'id' => $this->id,
+            'gameId' => $this->gameId,
+            'userId' => $this->userId,
+            'x' => $this->x,
+            'y' => $this->y,
+            'name' => static::CLASS_NAME,
+            'isActivated' => $this->isActivated,
+            'phase' => $this->phase,
+        ]);
+    }
 }

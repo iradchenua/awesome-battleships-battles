@@ -12,9 +12,12 @@
 
     {%  if turnForm %}
         {{ form(turnForm) }}
-        <p>{{ notActivatedShipName }}</p>
+        <p>{{ notActivatedShipName ? notActivatedShipName : 'There are not free ship' }}</p>
     {% else %}
         <p>Not your turn</p>
+    {% endif %}
+    {%  if phaseForm %}
+        {{ form(phaseForm) }}
     {% endif %}
     <canvas id="cnv" width="{{ width }}" height="{{ height }}"></canvas>
     <div id="jsInfo"
