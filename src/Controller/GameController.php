@@ -21,9 +21,9 @@ use App\Entity\User;
 use App\Entity\Game;
 use App\Entity\Ship;
 use App\Entity\Fleet;
-use App\FormHandler\TurnHandler;
-use App\FormHandler\PhaseHandler\MoveHandler;
 use App\Form\Phase\Move;
+use App\Form\Phase\Order;
+use App\Form\Phase\Shoot;
 use App\Form\GameTurn;
 use App\Manager\GamePanelManager;
 
@@ -38,11 +38,20 @@ class GameController extends AbstractController
     private $game;
 
     private static $phases = [
-        Ship::MOVEMENT_PHASE => Move::class
+        Ship::MOVEMENT_PHASE => Move::class,
+        Ship::ORDER_PHASE => Order::class,
+        Ship::SHOOT_PHASE => Shoot::class
     ];
 
+    public function __construct(
+
+    )
+    {
+
+    }
+
     /**
-     * @Route("/game", name="game")
+     * @Route("/game",  name="game")
      */
     public function index(Request $request)
     {
@@ -63,12 +72,6 @@ class GameController extends AbstractController
             $ships = $this->getShips($doctrine);
 
         $leaveForm = $this->createLeaveForm();
-        $leaveForm->handleRequest($request);
-
-        if ($leaveForm->isSubmitted() && $leaveForm->isValid()) {
-            $this->onLeaveFormSubmitted();
-            return $this->redirect('lobby');
-        }
 
         $turnForm = false;
         $phaseForm = false;
@@ -84,7 +87,12 @@ class GameController extends AbstractController
             $ships = $this->serialize($ships);
         $leaveFormView = $leaveForm->createView();
         $turnFormView = $turnForm ? $turnForm->createView() : false;
-        $phaseFormView = $phaseForm ? $phaseForm->createView() : false;
+        $phaseFormView = false;
+        $phaseName = false;
+        if ($phaseForm) {
+            $phaseFormView = $phaseForm->createView();
+            $phaseName = $phaseForm->getName();
+        }
         return $this->render('game.html.twig', [
                 'width' => self::CANVAS_WIDTH,
                 'height' => self::CANVAS_HEIGHT,
@@ -95,6 +103,7 @@ class GameController extends AbstractController
                 'leaveForm' => $leaveFormView,
                 'turnForm' => $turnFormView,
                 'phaseForm' => $phaseFormView,
+                'phaseName' => $phaseName,
                 'userId1' => $this->game->getUserId1(),
                 'userId2' => $this->game->getUserId2()
         ]);
@@ -120,6 +129,7 @@ class GameController extends AbstractController
     private function createLeaveForm() {
         return ($this->createFormBuilder()
             ->add('leave', SubmitType::class)
+            ->setAction($this->generateUrl('leave'))
             ->getForm());
     }
     private function onCurrentUser($ships, $userId,
@@ -159,5 +169,18 @@ class GameController extends AbstractController
         $this->game->setStatus(Game::STATUS_END);
         $this->entityManager->persist($this->game);
         $this->entityManager->flush();
+    }
+    /**
+     * @Route("/leave", name="leave")
+     */
+    function leave(Request $request)
+    {
+        $leaveForm = $this->createLeaveForm();
+        $leaveForm->handleRequest($request);
+
+        if ($leaveForm->isSubmitted() && $leaveForm->isValid()) {
+            $this->onLeaveFormSubmitted();
+            return $this->redirect('lobby');
+        }
     }
 }

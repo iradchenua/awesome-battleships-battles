@@ -1,8 +1,15 @@
 
 canvas {
     background-color: white;
-    display: block;
     margin: 0 auto;
+    width: 900px;
+    height: 600px;
+}
+
+#gamePanel
+{
+    float: left;
+    width: 300px;
 }
 #jsInfo {
     display: none;

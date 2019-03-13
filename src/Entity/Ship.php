@@ -22,8 +22,8 @@ abstract class Ship
 {
     protected const CLASS_NAME = "Ship";
     protected const COLOR = "none";
-    protected const WIDTH = "none";
-    protected const HEIGHT = "none";
+    protected const WIDTH = 0;
+    protected const HEIGHT = 0;
     protected const ENGINE_POWER = "none";
     public const    ORDER_PHASE = 0;
     public const    MOVEMENT_PHASE = 1;
@@ -55,16 +55,30 @@ abstract class Ship
     /**
      * @var int
      *
-     * @ORM\Column(name="x", type="integer", nullable=false)
+     * @ORM\Column(name="back_x", type="integer", nullable=false)
      */
-    protected $x;
+    protected $backX;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="y", type="integer", nullable=false)
+     * @ORM\Column(name="back_y", type="integer", nullable=false)
      */
-    protected $y;
+    protected $backY;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="head_x", type="integer", nullable=false)
+     */
+    protected $headX;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="head_y", type="integer", nullable=false)
+     */
+    protected $headY;
 
     /**
      * @var boolean
@@ -121,30 +135,6 @@ abstract class Ship
         return $this;
     }
 
-    public function getX(): ?int
-    {
-        return $this->x;
-    }
-
-    public function setX(int $x): self
-    {
-        $this->x = $x;
-
-        return $this;
-    }
-
-    public function getY(): ?int
-    {
-        return $this->y;
-    }
-
-    public function setY(int $y): self
-    {
-        $this->y = $y;
-
-        return $this;
-    }
-
     public function getClassName()
     {
         return static::CLASS_NAME;
@@ -157,12 +147,12 @@ abstract class Ship
 
     public function getWidth()
     {
-        return static::WIDTH;
+        return $this->headX - $this->backX;
     }
 
     public function getHeight()
     {
-        return static::HEIGHT;
+        return $this->headY - $this->backY;
     }
 
     public function getEnginePower()
@@ -181,21 +171,33 @@ abstract class Ship
 
         return $this;
     }
-    public function shiftOn($xShift, $yShift)
-    {
-        $this->x += $xShift;
-        $this->y += $yShift;
-    }
     public function __construct(array $params)
     {
-        $this->id = $params['id'];
+        if (isset($params['id']))
+            $this->id = $params['id'];
+
         $this->gameId = $params['gameId'];
         $this->userId = $params['userId'];
-        $this->x = $params['x'];
-        $this->y = $params['y'];
+
+        $this->backX = $params['backX'];
+        $this->backY = $params['backY'];
+
+        if (isset($params['headX']) && isset($params['headY'])) {
+            $this->headX = $params['headX'];
+            $this->headY = $params['headY'];
+        }
+        else
+        {
+            $this->headX = $this->backX + static::WIDTH;
+            $this->headY = $this->backY + static::HEIGHT;
+        }
+
         $this->name = static::CLASS_NAME;
         $this->isActivated = $params['isActivated'];
-        $this->phase = $params['phase'];
+        if (isset($params['phase']))
+            $this->phase = $params['phase'];
+        else
+            $this->phase = self::MOVEMENT_PHASE;
     }
 
     public function getPhase(): ?int
@@ -209,17 +211,97 @@ abstract class Ship
 
         return $this;
     }
+    public function incrementPhase()
+    {
+        if ($this->phase < self::SHOOT_PHASE)
+            $this->phase += 1;
+        else
+        {
+            $this->isActivated = true;
+            $this->phase = self::MOVEMENT_PHASE;
+        }
+    }
+    public function rotate()
+    {
+
+    }
+    private static function takeDir($diff)
+    {
+        return $diff == 0 ? $diff : ($diff > 0 ? 1 : -1);
+    }
+    public function move()
+    {
+        $x =$this->headX - $this->backX;
+        $y = $this->headY - $this->backY;
+
+        $dir = $x > $y ? $x : $y;
+        $dir = self::takeDir($dir);
+        if ($x > $y)
+            $this->backX += $dir;
+        else
+            $this->backY += $dir;
+    }
     public function getAll(): array
     {
         return ([
             'id' => $this->id,
             'gameId' => $this->gameId,
             'userId' => $this->userId,
-            'x' => $this->x,
-            'y' => $this->y,
+            'backX' => $this->backX,
+            'backY' => $this->backY,
+            'headX' => $this->headX,
+            'headY' => $this->headY,
             'name' => static::CLASS_NAME,
             'isActivated' => $this->isActivated,
             'phase' => $this->phase,
         ]);
+    }
+
+    public function getBackX(): ?int
+    {
+        return $this->backX;
+    }
+
+    public function setBackX(int $backX): self
+    {
+        $this->backX = $backX;
+
+        return $this;
+    }
+
+    public function getBackY(): ?int
+    {
+        return $this->backY;
+    }
+
+    public function setBackY(int $backY): self
+    {
+        $this->backY = $backY;
+
+        return $this;
+    }
+
+    public function getHeadX(): ?int
+    {
+        return $this->headX;
+    }
+
+    public function setHeadX(int $headX): self
+    {
+        $this->headX = $headX;
+
+        return $this;
+    }
+
+    public function getHeadY(): ?int
+    {
+        return $this->headY;
+    }
+
+    public function setHeadY(int $headY): self
+    {
+        $this->headY = $headY;
+
+        return $this;
     }
 }

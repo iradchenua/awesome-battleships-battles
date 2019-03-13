@@ -20,7 +20,7 @@
             this.xStep = this.canvas.width / params.gameFieldWidth;
             this.yStep = this.canvas.height / params.gameFieldHeight;
 
-            this.drawGrid();
+            //this.drawGrid();
         }
         drawGrid() {
             const canvas = this.canvas;
@@ -32,7 +32,7 @@
         }
         drawShip(ship) {
             this.ctx.fillStyle = ship.color;
-            this.ctx.fillRect(this.xStep * ship.x, this.yStep * ship.y,
+            this.ctx.fillRect(this.xStep * ship.backX, this.yStep * ship.backY,
                 this.xStep * ship.width, this.yStep * ship.height);
 
         }

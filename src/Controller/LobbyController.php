@@ -58,7 +58,7 @@ class LobbyController extends AbstractController
         if ($form->get('create game')->isClicked())
             $game = $this->onCreateGame($userId);
         else
-            $game = $this->onSearch($entityManager, $repository, $userId);
+            $game = $this->onSearch($repository, $userId);
 
         if ($game == null) {
             $this->addFlash('error', 'there are not available games :( ');
@@ -94,7 +94,7 @@ class LobbyController extends AbstractController
         return $game;
 
     }
-    private function onSearch($entityManager, $repository, $userId)
+    private function onSearch($repository, $userId)
     {
         $game = $repository->getFreeGame();
 
@@ -109,7 +109,14 @@ class LobbyController extends AbstractController
     private function giveShipsToUser($entityManager, $gameId, $userId, $typeCordsPairs)
     {
         foreach($typeCordsPairs as $type => $cords) {
-            $ship = ShipFactory::createShip($type, 1, $gameId, $userId, $cords['x'], $cords['y'],false);
+            $params = [
+                'gameId' => $gameId,
+                'userId' => $userId,
+                'backX' => $cords['x'],
+                'backY' => $cords['y'],
+                'isActivated' => false,
+            ];
+            $ship = ShipFactory::createShip($type, $params);
             $entityManager->persist($ship);
         }
 

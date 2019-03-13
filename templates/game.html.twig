@@ -6,19 +6,22 @@
 {% endblock %}
 {%  block body %}
     {{ parent() }}
-    <p>user_id1: {{ userId1 }}</p>
-    <p>user_id2: {{ userId2 ? userId2 : 'waiting' }}</p>
-    {{ form(leaveForm) }}
+    <div id="gamePanel">
+        <p>user_id1: {{ userId1 }}</p>
+        <p>user_id2: {{ userId2 ? userId2 : 'waiting' }}</p>
+        {{ form(leaveForm) }}
 
-    {%  if turnForm %}
-        {{ form(turnForm) }}
-        <p>{{ notActivatedShipName ? notActivatedShipName : 'There are not free ship' }}</p>
-    {% else %}
-        <p>Not your turn</p>
-    {% endif %}
-    {%  if phaseForm %}
-        {{ form(phaseForm) }}
-    {% endif %}
+        {%  if turnForm %}
+            {{ form(turnForm) }}
+            <p>{{ notActivatedShipName ? notActivatedShipName : 'There are not free ship' }}</p>
+        {% else %}
+            <p>Not your turn</p>
+        {% endif %}
+        {%  if phaseForm %}
+            <h3>{{  phaseName }} phase</h3>
+            {{ form(phaseForm) }}
+        {% endif %}
+    </div>
     <canvas id="cnv" width="{{ width }}" height="{{ height }}"></canvas>
     <div id="jsInfo"
          data-game-field-width="{{ gameFieldWidth }}"
