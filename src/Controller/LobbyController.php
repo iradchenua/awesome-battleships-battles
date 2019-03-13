@@ -19,7 +19,7 @@ use App\Entity\Game;
 use App\Entity\Ship;
 use App\Entity\ShipFactory;
 
-class LobbyController extends AbstractController
+class LobbyController extends BaseController
 {
     /**
      * @Route("/")
@@ -37,54 +37,21 @@ class LobbyController extends AbstractController
         if ($repository->getGameForUserId($userId) != null)
             return $this->redirectToRoute('game');
 
-        $form = $this->createFormBuilder()
-            ->add('search', SubmitType::class)
-            ->add('create game', SubmitType::class)
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid())
-           return $this->onFormSubmitted($form, $doctrine, $repository, $userId);
+        $form = $this->createInitGameForm();
 
         return $this->render('lobby.html.twig', [
             'form' => $form->createView()
         ]);
     }
-    private function onFormSubmitted($form, $doctrine, $repository, $userId)
+    private function createInitGameForm()
     {
-        $entityManager = $doctrine->getManager();
-
-        if ($form->get('create game')->isClicked())
-            $game = $this->onCreateGame($userId);
-        else
-            $game = $this->onSearch($repository, $userId);
-
-        if ($game == null) {
-            $this->addFlash('error', 'there are not available games :( ');
-            return $this->redirectToRoute('lobby');
-        }
-
-        $entityManager->persist($game);
-        if ($game->getStatus() == Game::STATUS_PLAY) {
-            $this->giveShipsToUser($entityManager, $game->getId(),  $game->getUserId1() , [
-                'redship' => [
-                    'x' => 0,
-                    'y' => 0,
-                ]
-            ]);
-            $this->giveShipsToUser($entityManager, $game->getId(),  $game->getUserId2(), [
-                'redship' => [
-                    'x' => 140,
-                    'y' => 0,
-                ]
-            ]);
-            $game->setCurrentUserId($game->getUserId1());
-        }
-        $entityManager->flush();
-
-        return $this->redirectToRoute('game');
+        return  $this->createFormBuilder()
+            ->setAction($this->generateUrl('init_game'))
+            ->add('search', SubmitType::class)
+            ->add('create game', SubmitType::class)
+            ->getForm();
     }
+
     private function onCreateGame($userId)
     {
         $game = new Game();
@@ -94,19 +61,17 @@ class LobbyController extends AbstractController
         return $game;
 
     }
-    private function onSearch($repository, $userId)
+    private function onSearch($userId)
     {
-        $game = $repository->getFreeGame();
-
+        $game = $this->gameRepository->getFreeGame();
         if ($game == null)
             return $game;
-
         $game->setUserId2($userId);
         $game->setStatus(Game::STATUS_PLAY);
 
         return $game;
     }
-    private function giveShipsToUser($entityManager, $gameId, $userId, $typeCordsPairs)
+    private function giveShipsToUser($gameId, $userId, $typeCordsPairs)
     {
         foreach($typeCordsPairs as $type => $cords) {
             $params = [
@@ -117,8 +82,53 @@ class LobbyController extends AbstractController
                 'isActivated' => false,
             ];
             $ship = ShipFactory::createShip($type, $params);
-            $entityManager->persist($ship);
+            $this->entityManager->persist($ship);
         }
 
+    }
+    /**
+     * @Route("/init/game", name="init_game")
+     */
+    public function initGame(Request $request)
+    {
+        $form = $this->createInitGameForm();
+        $form->handleRequest($request);
+
+        if (!$form->isSubmitted() || !$form->isValid())
+            return $this->redirectToRoute('lobby');
+
+        $user = $this->getUser();
+        $userId = $user->getId();
+
+        if ($form->get('create game')->isClicked())
+            $game = $this->onCreateGame($userId);
+        else
+            $game = $this->onSearch($userId);
+
+        if ($game == null) {
+            $this->addFlash('error', 'there are not available games :( ');
+            return $this->redirectToRoute('lobby');
+        }
+
+        $this->entityManager->persist($game);
+
+        if ($game->getStatus() == Game::STATUS_PLAY) {
+            $this->giveShipsToUser($game->getId(),  $game->getUserId1() , [
+                'redship' => [
+                    'x' => 0,
+                    'y' => 0,
+                ]
+            ]);
+            $this->giveShipsToUser($game->getId(),  $game->getUserId2(), [
+                'redship' => [
+                    'x' => 140,
+                    'y' => 0,
+                ]
+            ]);
+            $game->setCurrentUserId($game->getUserId1());
+        }
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('lobby');
     }
 }

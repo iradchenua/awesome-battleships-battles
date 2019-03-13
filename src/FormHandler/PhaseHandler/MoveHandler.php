@@ -21,7 +21,7 @@ class MoveHandler extends PhaseHandler
         ];
         $this->nameHandlersPairs = $this->nameHandlersPairs + $newNameHandlersPairs;
     }
-    protected function onRoate()
+    protected function onRotate()
     {
         if ($this->ship) {
             $this->ship->rotate(explode($this->eventName, " ")[1]);

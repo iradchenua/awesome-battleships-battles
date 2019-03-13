@@ -35,6 +35,24 @@ class ShipRepository extends ServiceEntityRepository
         }
         return $ships;
     }
+    public function getShipsForGame($gameId)
+    {
+        $shipsFromBase = $this->createQueryBuilder('s')
+            ->andWhere('s.gameId = :gameId')
+            ->setParameter('gameId', $gameId)
+            ->getQuery()
+            ->getResult();
+        $ships = [];
+        foreach($shipsFromBase as $ship) {
+            $userId = $ship->getUserId();
+            if (!isset($ships[$userId]))
+                $ships[$userId] = [];
+
+            $ships[$userId][] = shipFactory::createShip($ship->getName(), $ship->getAll());
+        }
+        return $ships;
+
+    }
     // /**
     //  * @return Ship[] Returns an array of Ship objects
     //  */
