@@ -64,6 +64,7 @@ class GameController extends BaseController
             return $this->redirectToRoute('lobby');
 
         $this->entityManager = $doctrine->getManager();
+        $ships = false;
         if ($this->game->getStatus() == Game::STATUS_PLAY) {
             /** @var Ship[] $ships */
             $ships = $doctrine->getRepository(Ship::class)

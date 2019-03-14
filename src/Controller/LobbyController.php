@@ -77,8 +77,8 @@ class LobbyController extends BaseController
             $params = [
                 'gameId' => $gameId,
                 'userId' => $userId,
-                'backX' => $cords['x'],
-                'backY' => $cords['y'],
+                'x' => $cords['x'],
+                'y' => $cords['y'],
                 'isActivated' => false,
             ];
             $ship = ShipFactory::createShip($type, $params);

@@ -232,14 +232,23 @@ abstract class Ship
     {
         $oldDirX = $this->getDirX();
         $oldDirY = $this->getDirY();
-        $this->setDirX($oldDirY);
-        $this->setDirY(-$oldDirX);
 
+        $newDirX = $oldDirY;
+        $newDirY = -$oldDirX;
         if ($where == 'left')
         {
-            $this->setDirX(-$this->getDirX());
-            $this->setDirY(-$this->getDirY());
+            $newDirX = -$newDirX;
+            $newDirY = -$newDirY;
         }
+
+        $this->setDirX($newDirX);
+        $this->setDirY($newDirY);
+        $shift = ($this->getWidth() - $this->getHeight()) / 2;
+        if ($oldDirX == 0)
+            $shift = -$shift;
+
+        $this->setX($this->getX() + $shift );
+        $this->setY($this->getY() + $shift );
 
     }
     public function move()
