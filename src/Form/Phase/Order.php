@@ -13,8 +13,6 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 
 class Order extends GamePhase
 {
-    protected const NAME = "Order";
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

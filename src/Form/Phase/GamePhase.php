@@ -15,17 +15,11 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class GamePhase extends AbstractType
 {
-    protected const NAME = "no name";
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
         $builder
             ->add('end ship turn', SubmitType::class)
             ->add('end phase', SubmitType::class);
-    }
-    public function getFormName()
-    {
-        return (static::NAME);
     }
 }

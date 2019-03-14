@@ -13,12 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class Move extends GamePhase
 {
-    protected const NAME = "Move";
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-
             ->add('move', SubmitType::class)
             ->add('rotate left', SubmitType::class)
             ->add('rotate right', SubmitType::class);

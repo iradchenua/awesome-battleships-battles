@@ -13,8 +13,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class Shoot extends GamePhase
 {
-    protected const NAME = "Shoot";
-
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder

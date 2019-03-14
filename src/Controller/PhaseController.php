@@ -19,11 +19,19 @@ use App\FormHandler\PhaseHandlersFactory;
 
 class PhaseController extends BaseController
 {
-    private static $phases = [
-        Ship::MOVEMENT_PHASE => \App\Form\Phase\Move::class,
-        Ship::ORDER_PHASE => \App\Form\Phase\Order::class,
-        Ship::SHOOT_PHASE => \App\Form\Phase\Shoot::class
-    ];
+    /**
+     * @var \App\Form\Phase\FormPhaseFactory
+     */
+    private $formPhaseFactory;
+
+    public function __construct(
+        \App\Repository\GameRepository $gameRepository,
+        \Doctrine\ORM\EntityManagerInterface $entityManager,
+        \App\Form\Phase\FormPhaseFactory $formPhaseFactory
+    ) {
+        $this->formPhaseFactory = $formPhaseFactory;
+        parent::__construct($gameRepository, $entityManager);
+    }
 
     /**
      * @Route("/phase",  name="phase")
@@ -49,9 +57,7 @@ class PhaseController extends BaseController
         if (!$ship)
             return $this->redirectToRoute('game');
 
-        $form = $this->createForm(self::$phases[$ship->getPhase()], null, [
-            'action' => $this->generateUrl('phase')
-        ]);
+        $form = $this->formPhaseFactory->createPhaseForm($ship);
 
         $handler = PhaseHandlersFactory::createNew($ship->getPhase(), [
             'form'  => $form,

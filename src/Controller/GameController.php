@@ -33,12 +33,19 @@ class GameController extends BaseController
     private const CANVAS_HEIGHT = 600;
     private const GAME_FIELD_WIDTH = 150;
     private const GAME_FIELD_HEIGHT = 100;
+    /**
+     * @var \App\Form\Phase\FormPhaseFactory
+     */
+    private $formPhaseFactory;
 
-    private static $phases = [
-        Ship::MOVEMENT_PHASE => Move::class,
-        Ship::ORDER_PHASE => Order::class,
-        Ship::SHOOT_PHASE => Shoot::class
-    ];
+    public function __construct(
+        \App\Repository\GameRepository $gameRepository,
+        \Doctrine\ORM\EntityManagerInterface $entityManager,
+        \App\Form\Phase\FormPhaseFactory $formPhaseFactory
+    ) {
+        $this->formPhaseFactory = $formPhaseFactory;
+        parent::__construct($gameRepository, $entityManager);
+    }
 
     /**
      * @Route("/game",  name="game")
@@ -57,19 +64,25 @@ class GameController extends BaseController
             return $this->redirectToRoute('lobby');
 
         $this->entityManager = $doctrine->getManager();
-        $ships = $this->getShips($doctrine);
+        if ($this->game->getStatus() == Game::STATUS_PLAY) {
+            /** @var Ship[] $ships */
+            $ships = $doctrine->getRepository(Ship::class)->getShipsForGame($this->game->getId());
+        }
 
         $leaveForm = $this->createLeaveForm();
 
         $turnForm = false;
-        $phaseForm = false;
         $notActivatedShip = false;
 
         if ($userId == $this->game->getCurrentUserId()) {
             $turnForm = $this->createTurnForm();
             $fleet = new Fleet($ships[$userId], $userId);
+            /** @var Ship $notActivatedShip */
             $notActivatedShip = $fleet->getNotActivatedShip();
-            $phaseForm = $this->createPhaseForm($notActivatedShip);
+        }
+
+        if ($notActivatedShip) {
+            $phaseName = $notActivatedShip->getPhaseName();
         }
 
         $ships = $this->serialize($ships);
@@ -83,8 +96,8 @@ class GameController extends BaseController
                 'ships' => $ships,
                 'leaveForm' => $this->getView($leaveForm),
                 'turnForm' => $this->getView($turnForm),
-                'phaseForm' => $this->getView($phaseForm),
-                'phaseName' => $this->getPhaseFormName($phaseForm),
+                'phaseForm' => $this->formPhaseFactory->createPhaseFormView($notActivatedShip),
+                'phaseName' => isset($phaseName) ? $phaseName : "",
                 'userId1' => $this->game->getUserId1(),
                 'userId2' => $this->game->getUserId2()
         ]);
@@ -95,10 +108,7 @@ class GameController extends BaseController
             return $one->{$someThing}();
         return false;
     }
-    private function getPhaseFormName($phaseForm)
-    {
-        return $this->getSomethingFromOne($phaseForm, 'getName');
-    }
+
     private function getNotActivatedShipName($ship)
     {
         return $this->getSomethingFromOne($ship, 'getName');
@@ -107,21 +117,7 @@ class GameController extends BaseController
     {
         return $this->getSomethingFromOne($form, 'createView');
     }
-    private function getShips($doctrine)
-    {
-        if ($this->game->getStatus() == Game::STATUS_PLAY)
-            return $doctrine->getRepository(Ship::class)->getShipsForGame($this->game->getId());
-        return false;
-    }
-    private function createPhaseForm($ship)
-    {
-        if (!$ship)
-            return false;
-        $phase = $ship->getPhase();
-        return ($this->createForm(self::$phases[$phase], null, [
-            'action' => $this->generateUrl('phase')
-        ]));
-    }
+
     private function createLeaveForm() {
         return ($this->createFormBuilder()
             ->add('leave', SubmitType::class)

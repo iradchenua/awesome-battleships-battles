@@ -25,9 +25,16 @@ abstract class Ship
     protected const WIDTH = 0;
     protected const HEIGHT = 0;
     protected const ENGINE_POWER = "none";
+
     public const    ORDER_PHASE = 0;
     public const    MOVEMENT_PHASE = 1;
     public const    SHOOT_PHASE = 2;
+
+    private $phaseName = [
+        self::ORDER_PHASE => 'Order',
+        self::MOVEMENT_PHASE => 'Move',
+        self::SHOOT_PHASE => 'Shoot',
+    ];
 
     /**
      * @var int
@@ -303,5 +310,10 @@ abstract class Ship
         $this->headY = $headY;
 
         return $this;
+    }
+
+    public function getPhaseName()
+    {
+        return $this->phaseName[$this->getPhase()];
     }
 }
