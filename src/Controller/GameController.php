@@ -66,11 +66,11 @@ class GameController extends BaseController
         $this->entityManager = $doctrine->getManager();
         if ($this->game->getStatus() == Game::STATUS_PLAY) {
             /** @var Ship[] $ships */
-            $ships = $doctrine->getRepository(Ship::class)->getShipsForGame($this->game->getId());
+            $ships = $doctrine->getRepository(Ship::class)
+                        ->getShipsForGame($this->game->getId());
         }
 
         $leaveForm = $this->createLeaveForm();
-
         $turnForm = false;
         $notActivatedShip = false;
 
@@ -80,42 +80,34 @@ class GameController extends BaseController
             /** @var Ship $notActivatedShip */
             $notActivatedShip = $fleet->getNotActivatedShip();
         }
-
+        $phaseName = "";
+        $shipName = "";
         if ($notActivatedShip) {
             $phaseName = $notActivatedShip->getPhaseName();
+            $shipName = $notActivatedShip->getName();
         }
-
-        $ships = $this->serialize($ships);
 
         return $this->render('game.html.twig', [
                 'width' => self::CANVAS_WIDTH,
                 'height' => self::CANVAS_HEIGHT,
                 'gameFieldWidth' => self::GAME_FIELD_WIDTH,
                 'gameFieldHeight' => self::GAME_FIELD_HEIGHT,
-                'notActivatedShipName' => $this->getNotActivatedShipName($notActivatedShip),
-                'ships' => $ships,
+                'notActivatedShipName' => $shipName,
+                'ships' => $this->serialize($ships),
                 'leaveForm' => $this->getView($leaveForm),
                 'turnForm' => $this->getView($turnForm),
                 'phaseForm' => $this->formPhaseFactory->createPhaseFormView($notActivatedShip),
-                'phaseName' => isset($phaseName) ? $phaseName : "",
+                'phaseName' => $phaseName,
                 'userId1' => $this->game->getUserId1(),
                 'userId2' => $this->game->getUserId2()
         ]);
     }
-    private function getSomethingFromOne($one, $someThing)
-    {
-        if ($one)
-            return $one->{$someThing}();
-        return false;
-    }
 
-    private function getNotActivatedShipName($ship)
-    {
-        return $this->getSomethingFromOne($ship, 'getName');
-    }
     private function getView($form)
     {
-        return $this->getSomethingFromOne($form, 'createView');
+        if ($form)
+            return $form->createView();
+        return (false);
     }
 
     private function createLeaveForm() {

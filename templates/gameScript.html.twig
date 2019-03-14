@@ -9,18 +9,20 @@
             this.draw();
         }
         draw() {
-            this.canvas.drawShip(this);
+            this.drawer.drawShip(this);
         }
     }
 
-    class Canvas {
+    class Drawer {
         constructor(params) {
             this.canvas = params.canvas;
             this.ctx = this.canvas.getContext('2d',  { alpha: false });
             this.xStep = this.canvas.width / params.gameFieldWidth;
             this.yStep = this.canvas.height / params.gameFieldHeight;
+            this.gameFieldWidth = params.gameFieldWidth;
+            this.gameFieldHeight = params.gameFieldHeight;
 
-            //this.drawGrid();
+            this.drawGrid();
         }
         drawGrid() {
             const canvas = this.canvas;
@@ -30,11 +32,24 @@
             for(let y = 0; y < canvas.width ; y += this.yStep)
                 this.ctx.strokeRect(0, y, canvas.width, this.yStep);
         }
+        xToCanvasCords(x) {
+            return this.xStep * (x + this.gameFieldWidth / 2);
+        }
+        yToCanvasCords(y) {
+            return this.yStep * (-y +  this.gameFieldHeight / 2);
+        }
         drawShip(ship) {
             this.ctx.fillStyle = ship.color;
-            this.ctx.fillRect(this.xStep * ship.backX, this.yStep * ship.backY,
-                this.xStep * ship.width, this.yStep * ship.height);
 
+            let width = ship.width;
+            let height = ship.height;
+            if (ship.dirX === 0) {
+                [width, height] = [height, width];
+            }
+            this.ctx.fillRect(this.xToCanvasCords(ship.x), this.yToCanvasCords(ship.y),
+                this.xStep * width, this.yStep *height);
+            console.log('dirX: ' + ship.dirX);
+            console.log('dirY: ' + ship.dirY);
         }
     }
 
@@ -49,7 +64,7 @@
         const GAME_FIELD_WIDTH = jsInfo.data('gameFieldWidth');
         const GAME_FIELD_HEIGHT = jsInfo.data('gameFieldHeight');
 
-        const canvas = new Canvas({
+        const drawer = new Drawer({
             "canvas": $('#cnv').get(0),
             "gameFieldWidth": GAME_FIELD_WIDTH,
             "gameFieldHeight": GAME_FIELD_HEIGHT
@@ -57,10 +72,11 @@
 
         const shipsFromServer = parseJSON("{{ ships }}");
         const ships = [];
+        console.log(shipsFromServer);
         for(let prop in shipsFromServer) {
             if (shipsFromServer.hasOwnProperty(prop)) {
                 shipsFromServer[prop].forEach(function(shipParams) {
-                    shipParams.canvas = canvas;
+                    shipParams.drawer = drawer;
                     ships.push(new SpaceShip(shipParams));
                 });
             }

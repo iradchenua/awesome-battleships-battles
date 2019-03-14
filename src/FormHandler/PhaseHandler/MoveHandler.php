@@ -24,7 +24,9 @@ class MoveHandler extends PhaseHandler
     protected function onRotate()
     {
         if ($this->ship) {
-            $this->ship->rotate(explode($this->eventName, " ")[1]);
+            $where = explode(" ", $this->eventName)[1];
+
+            $this->ship->rotate($where);
             $this->entityManager->merge($this->ship);
         }
     }
