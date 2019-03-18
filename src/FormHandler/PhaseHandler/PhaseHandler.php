@@ -17,8 +17,10 @@ class PhaseHandler extends Handler
         'end phase' => 'onEndPhase'
     ];
 
+    /**
+     * @var \App\Entity\Ship
+     */
     protected $ship;
-
 
     public function __construct($params)
     {
@@ -28,7 +30,7 @@ class PhaseHandler extends Handler
     protected function onEndShipTurn()
     {
         if ($this->ship) {
-            $this->ship->setIsActivated(true);
+            $this->ship->endShipTurn();
             $this->entityManager->merge($this->ship);
         }
     }

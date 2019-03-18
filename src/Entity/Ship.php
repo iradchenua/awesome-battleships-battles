@@ -24,6 +24,9 @@ abstract class Ship
     protected const COLOR = "none";
     protected const WIDTH = 0;
     protected const HEIGHT = 0;
+    protected const HANDLING = 0;
+    protected const SPEED = 0;
+    protected const PP = 0;
     protected const ENGINE_POWER = "none";
 
     public const    ORDER_PHASE = 0;
@@ -95,11 +98,39 @@ abstract class Ship
     protected $isActivated;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_stationery", type="boolean", nullable=false)
+     */
+    protected $isStationery;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="can_turn", type="boolean", nullable=false)
+     */
+    protected $canTurn;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="phase", type="integer", nullable=false)
      */
     protected $phase;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="moved", type="integer", nullable=false)
+     */
+    protected $moved;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="moved_from_last_turn", type="integer", nullable=false)
+     */
+    protected $movedFromLastTurn;
 
     public function getId(): ?int
     {
@@ -188,7 +219,10 @@ abstract class Ship
 
         $this->x = $params['x'];
         $this->y = $params['y'];
-
+        $this->isStationery = $params['isStationery'];
+        $this->moved = $params['moved'];
+        $this->setCanTurn($params['canTurn']);
+        $this->setMovedFromLastTurn($params['movedFromLastTurn']);
         if (isset($params['dirX']) && isset($params['dirY'])) {
             $this->dirX = $params['dirX'];
             $this->dirY = $params['dirY'];
@@ -224,12 +258,18 @@ abstract class Ship
             $this->phase += 1;
         else
         {
-            $this->isActivated = true;
-            $this->phase = self::MOVEMENT_PHASE;
+            $this->endShipTurn();
         }
     }
     public function rotate($where)
     {
+        if (!$this->getCanTurn())
+            return ;
+
+        $this->setMovedFromLastTurn(0);
+        $this->setCanTurn(false);
+        $this->setIsStationery(false);
+
         $oldDirX = $this->getDirX();
         $oldDirY = $this->getDirY();
 
@@ -251,10 +291,42 @@ abstract class Ship
         $this->setY($this->getY() + $shift );
 
     }
-    public function move()
+    private function canMoveOnThisNumberOfCeils($numberOfCeils)
     {
-        $this->setX($this->getX() + $this->getDirX());
-        $this->setY($this->getY() + $this->getDirY());
+
+        if ($numberOfCeils <= 0 ||
+            $numberOfCeils + $this->getMoved() > $this->getSpeed()) {
+            return false;
+        }
+
+        if ($this->getIsStationery()) {
+            return true;
+        }
+
+        if ($numberOfCeils < $this->getHandling()) {
+            return false;
+        }
+
+        return true;
+    }
+    public function move($numberOfCeils)
+    {
+        if (!$this->canMoveOnThisNumberOfCeils($numberOfCeils)) {
+            return;
+        }
+
+        $this->setIsStationery(false);
+        $this->setCanTurn(false);
+
+        $this->setCanTurn(false);
+        $this->setX($this->getX() + $numberOfCeils * $this->getDirX());
+        $this->setY($this->getY() + $numberOfCeils * $this->getDirY());
+        $this->setMoved($this->getMoved() + $numberOfCeils);
+        $this->setMovedFromLastTurn($this->getMovedFromLastTurn() + $numberOfCeils);
+
+        if ($this->getMovedFromLastTurn() >= $this->getHandling()) {
+            $this->setCanTurn(true);
+        }
     }
     public function getAll(): array
     {
@@ -266,6 +338,10 @@ abstract class Ship
             'y' => $this->y,
             'dirX' => $this->dirX,
             'dirY' => $this->dirY,
+            'moved' => $this->moved,
+            'movedFromLastTurn' => $this->getMovedFromLastTurn(),
+            'isStationery' => $this->isStationery,
+            'canTurn' => $this->getCanTurn(),
             'name' => static::CLASS_NAME,
             'isActivated' => $this->isActivated,
             'phase' => $this->phase,
@@ -323,5 +399,77 @@ abstract class Ship
     public function getPhaseName()
     {
         return $this->phaseName[$this->getPhase()];
+    }
+    public function getSpeed()
+    {
+        return static::SPEED;
+    }
+    public function getHandling()
+    {
+        return static::HANDLING;
+    }
+
+    public function getIsStationery(): ?bool
+    {
+        return $this->isStationery;
+    }
+
+    public function setIsStationery(bool $isStationery): self
+    {
+        $this->isStationery = $isStationery;
+
+        return $this;
+    }
+
+    public function getMoved(): ?int
+    {
+        return $this->moved;
+    }
+
+    public function setMoved(int $moved): self
+    {
+        $this->moved = $moved;
+
+        return $this;
+    }
+
+    public function endShipTurn()
+    {
+        $moved = $this->getMoved();
+        $handling = $this->getHandling();
+
+        if ($moved == $this->getSpeed() || $moved <= $handling) {
+            $this->setIsActivated(true);
+            $this->setPhase(Ship::MOVEMENT_PHASE);
+            $isStationery = ($this->getMoved() == $this->getHandling());
+            $this->setMoved(0);
+            $this->setMovedFromLastTurn(0);
+            $this->setIsStationery($isStationery);
+            $this->setCanTurn($isStationery);
+        }
+    }
+
+    public function getCanTurn(): ?bool
+    {
+        return $this->canTurn;
+    }
+
+    public function setCanTurn(bool $canTurn): self
+    {
+        $this->canTurn = $canTurn;
+
+        return $this;
+    }
+
+    public function getMovedFromLastTurn(): ?int
+    {
+        return $this->movedFromLastTurn;
+    }
+
+    public function setMovedFromLastTurn(int $movedFromLastTurn): self
+    {
+        $this->movedFromLastTurn = $movedFromLastTurn;
+
+        return $this;
     }
 }

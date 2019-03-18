@@ -8,10 +8,11 @@
 
 namespace App\Entity;
 
-use App\Entity\Ship;
-
 class Fleet
 {
+    /**
+     * @var $ships \App\Entity\Ship[]
+     */
     private $ships;
     private $owner;
 
@@ -26,13 +27,14 @@ class Fleet
             if (!$ship->getIsActivated())
                 return $ship;
         }
+        return false;
     }
     public function deactiveAllShips($entityManager)
     {
         foreach($this->ships as $ship)
         {
+            $ship->endShipTurn();
             $ship->setIsActivated(false);
-            $ship->setPhase(Ship::MOVEMENT_PHASE);
             $entityManager->merge($ship);
         }
     }

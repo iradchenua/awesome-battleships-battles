@@ -9,16 +9,19 @@
 namespace App\FormHandler;
 
 use App\Entity\Game;
-use App\FormHandler\Handler;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class TurnHandler extends Handler
 {
     protected $nameHandlersPairs = [
         'end turn' => 'onEndTurn'
     ];
-
+    /**
+     * @var \App\Entity\Fleet
+     */
     protected $fleet;
+    /**
+     * @var \App\Entity\Game
+     */
     protected $game;
 
     public function __construct($params)

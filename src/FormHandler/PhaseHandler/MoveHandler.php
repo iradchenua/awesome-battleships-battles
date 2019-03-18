@@ -11,6 +11,14 @@ namespace App\FormHandler\PhaseHandler;
 
 class MoveHandler extends PhaseHandler
 {
+    protected $form;
+    protected $entityManager;
+    protected $eventName;
+    /**
+     * @var $ship \App\Entity\Ship
+     */
+    protected $ship;
+
     public function __construct($params)
     {
         parent::__construct($params);
@@ -32,8 +40,9 @@ class MoveHandler extends PhaseHandler
     }
     protected function onMove()
     {
+        $numberOfCeils = $this->form->get('numberOfCeils')->getData();
         if ($this->ship) {
-            $this->ship->move();
+            $this->ship->move($numberOfCeils);
             $this->entityManager->merge($this->ship);
         }
     }
