@@ -71,16 +71,14 @@ class LobbyController extends BaseController
 
         return $game;
     }
-    private function giveShipsToUser($gameId, $userId, $typeCordsPairs)
+    private function giveShipsToUser($gameId, $userId, $typeParamPairs)
     {
-        foreach($typeCordsPairs as $type => $cords) {
-            $params = [
-                'gameId' => $gameId,
-                'userId' => $userId,
-                'x' => $cords['x'],
-                'y' => $cords['y'],
-                'isActivated' => false,
-            ];
+        $commonParams = [
+            'gameId' => $gameId,
+            'userId' => $userId,
+        ];
+        foreach($typeParamPairs as $type => $params) {
+            $params += $commonParams;
             $ship = ShipFactory::createShip($type, $params);
             $this->entityManager->persist($ship);
         }
@@ -115,14 +113,18 @@ class LobbyController extends BaseController
         if ($game->getStatus() == Game::STATUS_PLAY) {
             $this->giveShipsToUser($game->getId(),  $game->getUserId1() , [
                 'redship' => [
-                    'x' => 0,
+                    'x' => -75,
                     'y' => 0,
+                    'dirX' => 1,
+                    'dirY' => 0
                 ]
             ]);
             $this->giveShipsToUser($game->getId(),  $game->getUserId2(), [
                 'redship' => [
-                    'x' => 140,
+                    'x' => 75,
                     'y' => 0,
+                    'dirX' => -1,
+                    'dirY' => 0
                 ]
             ]);
             $game->setCurrentUserId($game->getUserId1());

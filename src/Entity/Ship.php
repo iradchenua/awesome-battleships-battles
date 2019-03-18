@@ -81,49 +81,49 @@ abstract class Ship
      *
      * @ORM\Column(name="dir_x", type="integer", nullable=false)
      */
-    protected $dirX;
+    protected $dirX = 1;
 
     /**
      * @var int
      *
      * @ORM\Column(name="dir_y", type="integer", nullable=false)
      */
-    protected $dirY;
+    protected $dirY = 0;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="is_activated", type="boolean", nullable=false)
      */
-    protected $isActivated;
+    protected $isActivated = false;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="is_stationery", type="boolean", nullable=false)
      */
-    protected $isStationery;
+    protected $isStationery = true;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="can_turn", type="boolean", nullable=false)
      */
-    protected $canTurn;
+    protected $canTurn = true;
 
     /**
      * @var int
      *
      * @ORM\Column(name="phase", type="integer", nullable=false)
      */
-    protected $phase;
+    protected $phase = self::ORDER_PHASE;
 
     /**
      * @var int
      *
      * @ORM\Column(name="moved", type="integer", nullable=false)
      */
-    protected $moved;
+    protected $moved = 0;
     /**
      * @var int
      *
@@ -208,52 +208,32 @@ abstract class Ship
 
         return $this;
     }
+
     public function __construct(array $params)
     {
-        if (isset($params['id']))
-            $this->id = $params['id'];
 
-        $this->gameId = $params['gameId'];
-        $this->userId = $params['userId'];
+        $this->setSpeed(static::SPEED);
 
-        $this->x = $params['x'];
-        $this->y = $params['y'];
-        if (isset( $params['isStationery']))
-            $this->isStationery = $params['isStationery'];
-        else
-            $this->isStationery = true;
-
-        if (isset($params['canTurn']))
+        if (isset($params['id'])) {
+            $this->setId($params['id']);
+            $this->setIsStationery($params['isStationery']);
             $this->setCanTurn($params['canTurn']);
-        else
-            $this->setCanTurn($this->getIsStationery());
-
-        if (isset($params['moved']))
             $this->setMoved($params['moved']);
-        else
-            $this->setMoved(0);
-        if (isset($params['speed'])) {
+            $this->setSpeed($params['speed']);
+            $this->setPhase($params['phase']);
+            $this->setIsActivated($params['isActivated']);
             $this->setSpeed($params['speed']);
         }
-        else {
-            $this->setSpeed(static::SPEED);
-        }
-        if (isset($params['dirX']) && isset($params['dirY'])) {
-            $this->dirX = $params['dirX'];
-            $this->dirY = $params['dirY'];
-        }
-        else
-        {
-            $this->dirX = 1;
-            $this->dirY = 0;
-        }
 
-        $this->name = static::CLASS_NAME;
-        $this->isActivated = $params['isActivated'];
-        if (isset($params['phase']))
-            $this->phase = $params['phase'];
-        else
-            $this->phase = self::ORDER_PHASE;
+        $this->setGameId($params['gameId']);
+        $this->setUserId($params['userId']);
+
+        $this->setX($params['x']);
+        $this->setY($params['y']);
+        $this->setDirX($params['dirX']);
+        $this->setDirY($params['dirY']);
+
+        $this->setName(static::CLASS_NAME);
     }
 
     public function getPhase(): ?int
@@ -269,17 +249,17 @@ abstract class Ship
     }
     public function incrementPhase()
     {
-        if ($this->phase < self::SHOOT_PHASE)
+        if ($this->phase < self::SHOOT_PHASE) {
             $this->phase += 1;
-        else
-        {
+        } else {
             $this->endShipTurn();
         }
     }
     public function rotate($where)
     {
-        if (!$this->getCanTurn())
-            return ;
+        if (!$this->getCanTurn()) {
+            return;
+        }
 
         $this->setMoved(0);
         $this->setCanTurn(false);
@@ -290,8 +270,7 @@ abstract class Ship
 
         $newDirX = $oldDirY;
         $newDirY = -$oldDirX;
-        if ($where == 'left')
-        {
+        if ($where == 'left') {
             $newDirX = -$newDirX;
             $newDirY = -$newDirY;
         }
@@ -299,8 +278,9 @@ abstract class Ship
         $this->setDirX($newDirX);
         $this->setDirY($newDirY);
         $shift = ($this->getWidth() - $this->getHeight()) / 2;
-        if ($oldDirX == 0)
+        if ($oldDirX == 0) {
             $shift = -$shift;
+        }
 
         $this->setX($this->getX() + $shift );
         $this->setY($this->getY() + $shift );
@@ -313,8 +293,9 @@ abstract class Ship
             return false;
         }
 
-        if ($numberOfCeils == $this->getHandling())
+        if ($numberOfCeils == $this->getHandling()) {
             return true;
+        }
 
         if ($this->getIsStationery() && $numberOfCeils <= $this->getHandling()) {
             return true;
@@ -331,11 +312,9 @@ abstract class Ship
         $this->setIsStationery(false);
         $this->setCanTurn(false);
 
-        $this->setCanTurn(false);
         $this->setX($this->getX() + $numberOfCeils * $this->getDirX());
         $this->setY($this->getY() + $numberOfCeils * $this->getDirY());
         $this->setMoved($this->getMoved() + $numberOfCeils);
-
         if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }
@@ -479,6 +458,13 @@ abstract class Ship
     public function setSpeed(int $speed): self
     {
         $this->speed = $speed;
+
+        return $this;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
 
         return $this;
     }
