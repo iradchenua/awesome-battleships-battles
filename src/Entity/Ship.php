@@ -261,10 +261,7 @@ abstract class Ship
             return;
         }
 
-        $this->setMoved(0);
         $this->setCanTurn(false);
-        $this->setIsStationery(false);
-
         $oldDirX = $this->getDirX();
         $oldDirY = $this->getDirY();
 
@@ -289,6 +286,9 @@ abstract class Ship
     private function canMoveOnThisNumberOfCeils($numberOfCeils)
     {
 
+        if ($this->getMoved() > 0)
+            return false;
+
         if ($numberOfCeils <= 0) {
             return false;
         }
@@ -301,7 +301,7 @@ abstract class Ship
             return true;
         }
 
-        return $numberOfCeils <= $this->getSpeed();
+        return $numberOfCeils == $this->getSpeed();
     }
     public function move($numberOfCeils)
     {
@@ -315,7 +315,6 @@ abstract class Ship
         $this->setX($this->getX() + $numberOfCeils * $this->getDirX());
         $this->setY($this->getY() + $numberOfCeils * $this->getDirY());
         $this->setMoved($this->getMoved() + $numberOfCeils);
-        $this->setSpeed($this->getSpeed() - $numberOfCeils);
         if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }
@@ -418,13 +417,14 @@ abstract class Ship
         $this->setSpeed(static::SPEED);
         $this->setIsActivated(true);
         $this->setPhase(Ship::ORDER_PHASE);
-        $isStationery = $this->getIsStationery();
-        $isStationery = $isStationery || ($this->getMoved() == $this->getHandling());
-        $this->setMoved(0);
-        $this->setIsStationery($isStationery);
-        if ($isStationery)
-            $this->setCanTurn($isStationery);
 
+        if ($this->getMoved() > 0) {
+            $isStationery = $this->getIsStationery();
+            $isStationery = $isStationery || ($this->getMoved() == $this->getHandling());
+            $this->setMoved(0);
+            $this->setIsStationery($isStationery);
+            $this->setCanTurn($isStationery);
+        }
     }
 
     public function getCanTurn(): ?bool
