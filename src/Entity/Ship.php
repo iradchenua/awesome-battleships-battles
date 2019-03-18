@@ -301,7 +301,7 @@ abstract class Ship
             return true;
         }
 
-        return $numberOfCeils == $this->getSpeed();
+        return $numberOfCeils <= $this->getSpeed();
     }
     public function move($numberOfCeils)
     {
@@ -315,10 +315,10 @@ abstract class Ship
         $this->setX($this->getX() + $numberOfCeils * $this->getDirX());
         $this->setY($this->getY() + $numberOfCeils * $this->getDirY());
         $this->setMoved($this->getMoved() + $numberOfCeils);
+        $this->setSpeed($this->getSpeed() - $numberOfCeils);
         if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }
-        $this->incrementPhase();
     }
     public function getAll(): array
     {

@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="71ae1385-574f-4d49-8f0a-cda650a60142" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/LobbyController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/LobbyController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Entity/Ship.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/Ship.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/gameScript.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/gameScript.html.twig" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -81,8 +79,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Entity/Ship.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="609">
-              <caret line="320" column="8" selection-start-line="320" selection-start-column="8" selection-end-line="320" selection-end-column="32" />
+            <state relative-caret-position="558">
+              <caret line="317" column="58" selection-start-line="317" selection-start-column="58" selection-end-line="317" selection-end-column="58" />
             </state>
           </provider>
         </entry>
@@ -466,7 +464,7 @@
       <workItem from="1552585151295" duration="222000" />
       <workItem from="1552660325670" duration="1651000" />
       <workItem from="1552823216751" duration="20114000" />
-      <workItem from="1552908617738" duration="18075000" />
+      <workItem from="1552908617738" duration="18358000" />
     </task>
     <task id="LOCAL-00001" summary="change security configuration">
       <created>1551806557424</created>
@@ -559,11 +557,18 @@
       <option name="project" value="LOCAL" />
       <updated>1552930591350</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="change move rules on implementation where you can move only on speed during turn">
+      <created>1552945925680</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1552945925680</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="246109000" />
+    <option name="totallyTimeSpent" value="246392000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -659,7 +664,8 @@
     <MESSAGE value="add rotate and move" />
     <MESSAGE value="try to add move rules" />
     <MESSAGE value="add move rules" />
-    <option name="LAST_COMMIT_MESSAGE" value="add move rules" />
+    <MESSAGE value="change move rules on implementation where you can move only on speed during turn" />
+    <option name="LAST_COMMIT_MESSAGE" value="change move rules on implementation where you can move only on speed during turn" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
@@ -999,8 +1005,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Entity/Ship.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="609">
-          <caret line="320" column="8" selection-start-line="320" selection-start-column="8" selection-end-line="320" selection-end-column="32" />
+        <state relative-caret-position="558">
+          <caret line="317" column="58" selection-start-line="317" selection-start-column="58" selection-end-line="317" selection-end-column="58" />
         </state>
       </provider>
     </entry>
