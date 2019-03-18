@@ -124,13 +124,12 @@ abstract class Ship
      * @ORM\Column(name="moved", type="integer", nullable=false)
      */
     protected $moved;
-
     /**
      * @var int
      *
-     * @ORM\Column(name="moved_from_last_turn", type="integer", nullable=false)
+     * @ORM\Column(name="speed", type="integer", nullable=false)
      */
-    protected $movedFromLastTurn;
+    protected $speed;
 
     public function getId(): ?int
     {
@@ -219,10 +218,26 @@ abstract class Ship
 
         $this->x = $params['x'];
         $this->y = $params['y'];
-        $this->isStationery = $params['isStationery'];
-        $this->moved = $params['moved'];
-        $this->setCanTurn($params['canTurn']);
-        $this->setMovedFromLastTurn($params['movedFromLastTurn']);
+        if (isset( $params['isStationery']))
+            $this->isStationery = $params['isStationery'];
+        else
+            $this->isStationery = true;
+
+        if (isset($params['canTurn']))
+            $this->setCanTurn($params['canTurn']);
+        else
+            $this->setCanTurn($this->getIsStationery());
+
+        if (isset($params['moved']))
+            $this->setMoved($params['moved']);
+        else
+            $this->setMoved(0);
+        if (isset($params['speed'])) {
+            $this->setSpeed($params['speed']);
+        }
+        else {
+            $this->setSpeed(static::SPEED);
+        }
         if (isset($params['dirX']) && isset($params['dirY'])) {
             $this->dirX = $params['dirX'];
             $this->dirY = $params['dirY'];
@@ -238,7 +253,7 @@ abstract class Ship
         if (isset($params['phase']))
             $this->phase = $params['phase'];
         else
-            $this->phase = self::MOVEMENT_PHASE;
+            $this->phase = self::ORDER_PHASE;
     }
 
     public function getPhase(): ?int
@@ -266,7 +281,7 @@ abstract class Ship
         if (!$this->getCanTurn())
             return ;
 
-        $this->setMovedFromLastTurn(0);
+        $this->setMoved(0);
         $this->setCanTurn(false);
         $this->setIsStationery(false);
 
@@ -294,20 +309,18 @@ abstract class Ship
     private function canMoveOnThisNumberOfCeils($numberOfCeils)
     {
 
-        if ($numberOfCeils <= 0 ||
-            $numberOfCeils + $this->getMoved() > $this->getSpeed()) {
+        if ($numberOfCeils <= 0) {
             return false;
         }
 
-        if ($this->getIsStationery()) {
+        if ($numberOfCeils == $this->getHandling())
+            return true;
+
+        if ($this->getIsStationery() && $numberOfCeils <= $this->getHandling()) {
             return true;
         }
 
-        if ($numberOfCeils < $this->getHandling()) {
-            return false;
-        }
-
-        return true;
+        return $numberOfCeils == $this->getSpeed();
     }
     public function move($numberOfCeils)
     {
@@ -322,11 +335,11 @@ abstract class Ship
         $this->setX($this->getX() + $numberOfCeils * $this->getDirX());
         $this->setY($this->getY() + $numberOfCeils * $this->getDirY());
         $this->setMoved($this->getMoved() + $numberOfCeils);
-        $this->setMovedFromLastTurn($this->getMovedFromLastTurn() + $numberOfCeils);
 
-        if ($this->getMovedFromLastTurn() >= $this->getHandling()) {
+        if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }
+        $this->incrementPhase();
     }
     public function getAll(): array
     {
@@ -338,8 +351,8 @@ abstract class Ship
             'y' => $this->y,
             'dirX' => $this->dirX,
             'dirY' => $this->dirY,
-            'moved' => $this->moved,
-            'movedFromLastTurn' => $this->getMovedFromLastTurn(),
+            'moved' => $this->getMoved(),
+            'speed' => $this->getSpeed(),
             'isStationery' => $this->isStationery,
             'canTurn' => $this->getCanTurn(),
             'name' => static::CLASS_NAME,
@@ -402,7 +415,7 @@ abstract class Ship
     }
     public function getSpeed()
     {
-        return static::SPEED;
+        return $this->speed;
     }
     public function getHandling()
     {
@@ -421,32 +434,18 @@ abstract class Ship
         return $this;
     }
 
-    public function getMoved(): ?int
-    {
-        return $this->moved;
-    }
-
-    public function setMoved(int $moved): self
-    {
-        $this->moved = $moved;
-
-        return $this;
-    }
-
     public function endShipTurn()
     {
-        $moved = $this->getMoved();
-        $handling = $this->getHandling();
-
-        if ($moved == $this->getSpeed() || $moved <= $handling) {
-            $this->setIsActivated(true);
-            $this->setPhase(Ship::MOVEMENT_PHASE);
-            $isStationery = ($this->getMoved() == $this->getHandling());
-            $this->setMoved(0);
-            $this->setMovedFromLastTurn(0);
-            $this->setIsStationery($isStationery);
+        $this->setSpeed(static::SPEED);
+        $this->setIsActivated(true);
+        $this->setPhase(Ship::ORDER_PHASE);
+        $isStationery = $this->getIsStationery();
+        $isStationery = $isStationery || ($this->getMoved() == $this->getHandling());
+        $this->setMoved(0);
+        $this->setIsStationery($isStationery);
+        if ($isStationery)
             $this->setCanTurn($isStationery);
-        }
+
     }
 
     public function getCanTurn(): ?bool
@@ -461,14 +460,25 @@ abstract class Ship
         return $this;
     }
 
-    public function getMovedFromLastTurn(): ?int
+    public function getMoved(): ?int
     {
-        return $this->movedFromLastTurn;
+        return $this->moved;
     }
 
-    public function setMovedFromLastTurn(int $movedFromLastTurn): self
+    public function setMoved(int $moved): self
     {
-        $this->movedFromLastTurn = $movedFromLastTurn;
+        $this->moved = $moved;
+
+        return $this;
+    }
+    public function getPP()
+    {
+        return static::PP;
+    }
+
+    public function setSpeed(int $speed): self
+    {
+        $this->speed = $speed;
 
         return $this;
     }

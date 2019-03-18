@@ -14,3 +14,18 @@ canvas {
 #jsInfo {
     display: none;
 }
+
+#ship {
+    border-style: solid;
+    border-width: 5px;
+    border-color:  #718C00;
+}
+
+#ship * {
+    margin: 0 auto;
+    max-width: 70%;
+}
+
+#ship p, #ship h3 {
+    text-align: center;
+}

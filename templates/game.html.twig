@@ -13,9 +13,13 @@
 
         {%  if turnForm %}
             {{ form(turnForm) }}
-            <p>{{ notActivatedShipName ? notActivatedShipName : 'There are not free ship' }}</p>
         {% else %}
             <p>Not your turn</p>
+        {% endif %}
+        {% if notActivatedShip %}
+            {{ include('shipDump.html.twig', {'ship': notActivatedShip}) }}
+        {% else %}
+            <p>'There are not free ship'</p>
         {% endif %}
         {%  if phaseForm %}
             <h3>{{  phaseName }} phase</h3>

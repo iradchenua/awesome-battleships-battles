@@ -82,10 +82,8 @@ class GameController extends BaseController
             $notActivatedShip = $fleet->getNotActivatedShip();
         }
         $phaseName = "";
-        $shipName = "";
         if ($notActivatedShip) {
             $phaseName = $notActivatedShip->getPhaseName();
-            $shipName = $notActivatedShip->getName();
         }
 
         return $this->render('game.html.twig', [
@@ -93,7 +91,7 @@ class GameController extends BaseController
                 'height' => self::CANVAS_HEIGHT,
                 'gameFieldWidth' => self::GAME_FIELD_WIDTH,
                 'gameFieldHeight' => self::GAME_FIELD_HEIGHT,
-                'notActivatedShipName' => $shipName,
+                'notActivatedShip' => $notActivatedShip,
                 'ships' => $this->serialize($ships),
                 'leaveForm' => $this->getView($leaveForm),
                 'turnForm' => $this->getView($turnForm),

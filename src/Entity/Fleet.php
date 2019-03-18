@@ -33,7 +33,9 @@ class Fleet
     {
         foreach($this->ships as $ship)
         {
-            $ship->endShipTurn();
+            if (!$ship->getIsActivated()) {
+                $ship->endShipTurn();
+            }
             $ship->setIsActivated(false);
             $entityManager->merge($ship);
         }

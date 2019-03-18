@@ -10,6 +10,7 @@ namespace App\Form\Phase;
 
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class Order extends GamePhase
 {
@@ -17,8 +18,9 @@ class Order extends GamePhase
     {
         $builder
             ->add('move', NumberType::class)
-            ->add('shields', NumberType::class)
-            ->add('weapons', NumberType::class);
+            /*->add('shields', NumberType::class)
+            ->add('weapons', NumberType::class)*/
+            ->add('distribute', SubmitType::class);
         parent::buildForm($builder, $options);
     }
 }

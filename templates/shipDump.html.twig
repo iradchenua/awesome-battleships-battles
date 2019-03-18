@@ -1,0 +1,11 @@
+<div id="ship">
+    <div style="width: {{ 5 * ship.width }}px; height: {{ 5 * ship.height }}px; background-color: {{ ship.color }}"></div>
+    <h3>{{ ship.name() }}</h3>
+    <p>power points: {{ ship.PP }}</p>
+    <p>speed: {{ ship.speed }}</p>
+    <p>width: {{ ship.width }}</p>
+    <p>height: {{ ship.height }}</p>
+    <p>handling: {{ ship.handling }}</p>
+    <p>can turn: {{ ship.canTurn ? 'yes' : 'no' }}</p>
+    <p>stationery: {{ ship.isStationery ? 'yes' : 'no' }}</p>
+</div>
