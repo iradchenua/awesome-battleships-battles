@@ -15,6 +15,9 @@ class Game
     public const STATUS_WAITING = 'waiting';
     public const STATUS_PLAY = 'play';
     public const STATUS_END = 'end';
+    public const GAME_FIELD_WIDTH = 150;
+    public const GAME_FIELD_HEIGHT = 100;
+
     /**
      * @var int
      *

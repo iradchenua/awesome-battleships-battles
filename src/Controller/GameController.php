@@ -31,8 +31,6 @@ class GameController extends BaseController
 {
     private const CANVAS_WIDTH = 900;
     private const CANVAS_HEIGHT = 600;
-    private const GAME_FIELD_WIDTH = 150;
-    private const GAME_FIELD_HEIGHT = 100;
     /**
      * @var \App\Form\Phase\FormPhaseFactory
      */
@@ -89,8 +87,8 @@ class GameController extends BaseController
         return $this->render('game.html.twig', [
                 'width' => self::CANVAS_WIDTH,
                 'height' => self::CANVAS_HEIGHT,
-                'gameFieldWidth' => self::GAME_FIELD_WIDTH,
-                'gameFieldHeight' => self::GAME_FIELD_HEIGHT,
+                'gameFieldWidth' => Game::GAME_FIELD_WIDTH,
+                'gameFieldHeight' => Game::GAME_FIELD_HEIGHT,
                 'notActivatedShip' => $notActivatedShip,
                 'ships' => $this->serialize($ships),
                 'leaveForm' => $this->getView($leaveForm),

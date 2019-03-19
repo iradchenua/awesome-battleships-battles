@@ -25,13 +25,15 @@ class Handler
 
     public function handle()
     {
+        $valid = true;
         foreach($this->nameHandlersPairs as $name => $handler) {
             if ($this->form->get($name)->isClicked()) {
                 $this->eventName = $name;
-                $this->{$handler}();
+                $valid = $this->{$handler}();
                 break;
             }
         }
         $this->entityManager->flush();
+        return $valid;
     }
 }

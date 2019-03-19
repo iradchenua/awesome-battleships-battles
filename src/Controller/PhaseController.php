@@ -46,31 +46,43 @@ class PhaseController extends BaseController
         $this->game = $this->gameRepository
             ->getGameForUserId($userId);
 
-        if ($this->game->getStatus() != Game::STATUS_PLAY)
+        if ($this->game->getStatus() != Game::STATUS_PLAY) {
             return $this->redirectToRoute('game');
+        }
 
         $ships = $doctrine->getRepository(Ship::class)
-                            ->getShipsForGame($this->game->getId());
+            ->getShipsForGame($this->game->getId());
 
         $fleet = new Fleet($ships[$userId], $userId);
         $ship = $fleet->getNotActivatedShip();
-        if (!$ship)
+
+        if (!$ship) {
             return $this->redirectToRoute('game');
+        }
 
         $form = $this->formPhaseFactory->createPhaseForm($ship);
 
         $handler = PhaseHandlersFactory::createNew($ship->getPhase(), [
-            'form'  => $form,
+            'form' => $form,
             'fleet' => $fleet,
-            'ship'  => $ship,
-            'game'  => $this->game,
+            'ship' => $ship,
+            'game' => $this->game,
             'entityManager' => $this->entityManager
         ]);
 
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid())
-            $handler->handle();
+        $message = true;
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $message = $handler->handle();
+        }
+
+        if (is_string($message)) {
+            $this->addFlash('error', $message);
+        } else {
+            $this->addFlash('success', 'done');
+        }
 
         return $this->redirectToRoute('game');
     }

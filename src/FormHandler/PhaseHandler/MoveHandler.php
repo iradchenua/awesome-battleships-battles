@@ -8,7 +8,6 @@
 
 namespace App\FormHandler\PhaseHandler;
 
-
 class MoveHandler extends PhaseHandler
 {
     protected $form;
@@ -41,9 +40,15 @@ class MoveHandler extends PhaseHandler
     protected function onMove()
     {
         $numberOfCeils = $this->form->get('numberOfCeils')->getData();
+        if (!is_numeric($numberOfCeils))
+            return 'invalid number of ceils';
+        $canMove = true;
         if ($this->ship) {
-            $this->ship->move($numberOfCeils);
+            $canMove =  $this->ship->move($numberOfCeils);
             $this->entityManager->merge($this->ship);
         }
+        if (!$canMove)
+            return 'can*t move, read the rules';
+        return $canMove;
     }
 }

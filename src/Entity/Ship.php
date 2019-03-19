@@ -130,6 +130,12 @@ abstract class Ship
      * @ORM\Column(name="speed", type="integer", nullable=false)
      */
     protected $speed;
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_live", type="boolean", nullable=false)
+     */
+    protected $isLive = true;
 
     public function getId(): ?int
     {
@@ -223,6 +229,7 @@ abstract class Ship
             $this->setPhase($params['phase']);
             $this->setIsActivated($params['isActivated']);
             $this->setSpeed($params['speed']);
+            $this->setIsLive($params['isLive']);
         }
 
         $this->setGameId($params['gameId']);
@@ -299,7 +306,7 @@ abstract class Ship
     public function move($numberOfCeils)
     {
         if (!$this->canMoveOnThisNumberOfCeils($numberOfCeils)) {
-            return;
+            return false;
         }
 
         $this->setIsStationery(false);
@@ -311,6 +318,7 @@ abstract class Ship
         if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }
+        return true;
     }
     public function getAll(): array
     {
@@ -325,6 +333,7 @@ abstract class Ship
             'moved' => $this->getMoved(),
             'speed' => $this->getSpeed(),
             'isStationery' => $this->isStationery,
+            'isLive' => $this->getIsLive(),
             'canTurn' => $this->getCanTurn(),
             'name' => static::CLASS_NAME,
             'isActivated' => $this->isActivated,
@@ -458,6 +467,18 @@ abstract class Ship
     public function setId(int $id): self
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    public function getIsLive(): ?bool
+    {
+        return $this->isLive;
+    }
+
+    public function setIsLive(bool $isLive): self
+    {
+        $this->isLive = $isLive;
 
         return $this;
     }
