@@ -18,7 +18,7 @@ class Fleet
 
     public function __construct($ships, $owner)
     {
-        $this->ships = $ships;
+        $this->ships = $ships[$owner] ?? [];
         $this->owner = $owner;
     }
     public function getNotActivatedShip()

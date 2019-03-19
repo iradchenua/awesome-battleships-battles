@@ -24,7 +24,8 @@ class ShipRepository extends ServiceEntityRepository
     {
         $ships = [];
         $shipsFromBase = $this->createQueryBuilder('s')
-            ->andWhere('s.gameId = :gameId and s.userId = :userId')
+            ->andWhere('s.gameId = :gameId and s.userId = :userId and s.isLive = :isLive')
+            ->setParameter('isLive', true)
             ->setParameter('gameId', $gameId)
             ->setParameter('userId', $userId)
             ->getQuery()
@@ -38,7 +39,8 @@ class ShipRepository extends ServiceEntityRepository
     public function getShipsForGame($gameId)
     {
         $shipsFromBase = $this->createQueryBuilder('s')
-            ->andWhere('s.gameId = :gameId')
+            ->andWhere('s.gameId = :gameId and s.isLive = :isLive')
+            ->setParameter('isLive', true)
             ->setParameter('gameId', $gameId)
             ->getQuery()
             ->getResult();

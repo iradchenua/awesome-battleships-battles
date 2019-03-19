@@ -38,6 +38,7 @@
         drawGrid() {
             const canvas = this.canvas;
             this.ctx.strokeStyle = "#FFFFFF";
+            console.log('hi bitches');
             for(let x = 0; x < canvas.width ; x += this.xStep)
                 this.ctx.strokeRect(x, 0, this.xStep, canvas.height);
             for(let y = 0; y < canvas.width ; y += this.yStep)
@@ -55,23 +56,19 @@
             let height = ship.height;
             let x = this.xToCanvasCords(ship.x);
             let y = this.yToCanvasCords(ship.y);
-
-            this.ctx.save();
-
-
             width *= this.xStep;
             height *= this.yStep;
 
-           this.ctx.translate(x + width / 2, y + height / 2);
+            this.ctx.save();
+
+            this.ctx.translate(x + width / 2, y + height / 2);
             this.ctx.rotate(ship.getAngle());
 
             x = -width / 2;
             y = -height / 2;
-
-
             this.ctx.strokeStyle = ship.name.split('ship')[0];
             this.ctx.strokeRect(x, y,
-                width,height);
+                                width, height);
             this.ctx.drawImage(ship.image,
                                 x, y,
                                 width, height);
@@ -84,7 +81,6 @@
     }
 
     $(document).ready(function() {
-
         const jsInfo = $('#jsInfo');
 
         const GAME_FIELD_WIDTH = jsInfo.data('gameFieldWidth');

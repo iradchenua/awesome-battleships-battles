@@ -75,7 +75,7 @@ class GameController extends BaseController
 
         if ($userId == $this->game->getCurrentUserId()) {
             $turnForm = $this->createTurnForm();
-            $fleet = new Fleet($ships[$userId], $userId);
+            $fleet = new Fleet($ships, $userId);
             /** @var Ship $notActivatedShip */
             $notActivatedShip = $fleet->getNotActivatedShip();
         }
@@ -122,7 +122,7 @@ class GameController extends BaseController
     private function serialize($ships)
     {
         if (!$ships)
-            return ($ships);
+            return ('');
 
         $encodes = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];

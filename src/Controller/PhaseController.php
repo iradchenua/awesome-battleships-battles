@@ -53,7 +53,7 @@ class PhaseController extends BaseController
         $ships = $doctrine->getRepository(Ship::class)
             ->getShipsForGame($this->game->getId());
 
-        $fleet = new Fleet($ships[$userId], $userId);
+        $fleet = new Fleet($ships, $userId);
         $ship = $fleet->getNotActivatedShip();
 
         if (!$ship) {
@@ -77,7 +77,7 @@ class PhaseController extends BaseController
         if ($form->isSubmitted() && $form->isValid()) {
             $message = $handler->handle();
         }
-
+        $message = $ship->getIsLive() ? $message : $ship->getName() . ' is dead';
         if (is_string($message)) {
             $this->addFlash('error', $message);
         } else {

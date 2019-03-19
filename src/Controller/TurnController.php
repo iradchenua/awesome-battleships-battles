@@ -45,7 +45,7 @@ class TurnController extends BaseController
 
         $handler = new TurnHandler([
             'form'  => $form,
-            'fleet' => new Fleet($ships[$userId], $userId),
+            'fleet' => new Fleet($ships, $userId),
             'game'  => $this->game,
             'entityManager' => $this->entityManager
         ]);

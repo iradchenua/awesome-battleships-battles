@@ -268,7 +268,7 @@ abstract class Ship
             return;
         }
 
-        $this->setCanTurn(false);
+        //$this->setCanTurn(false);
         $oldDirX = $this->getDirX();
         $oldDirY = $this->getDirY();
 
@@ -282,6 +282,7 @@ abstract class Ship
         $this->setDirX($newDirX);
         $this->setDirY($newDirY);
 
+        $this->checkOutOfBounds();
     }
     private function canMoveOnThisNumberOfCeils($numberOfCeils)
     {
@@ -303,6 +304,44 @@ abstract class Ship
 
         return $numberOfCeils == $this->getSpeed();
     }
+    private function checkXOut($x) {
+        return $x <  (-Game::GAME_FIELD_WIDTH / 2) || $x >  Game::GAME_FIELD_WIDTH / 2;
+    }
+    private function checkYOut($y) {
+        return $y < (-Game::GAME_FIELD_HEIGHT / 2) || $y > Game::GAME_FIELD_HEIGHT / 2;
+    }
+    private function checkOutOfBounds()
+    {
+        $x = $this->getX();
+        $y = $this->getY();
+        $width = $this->getWidth();
+        $height = $this->getHeight();
+
+        $shift = ($width - $height) / 2;
+
+        $opositeX = $x + $this->getWidth();
+        $opositeY = $y - $this->getHeight();
+
+        if ($this->dirY === 1) {
+            $x += $shift;
+            $y += $shift;
+            $opositeX += $shift;
+            $opositeY += $shift;
+
+        } else if ($this->dirY === -1) {
+            $x -= $shift;
+            $y -= $shift;
+            $opositeX += $shift;
+            $opositeY += $shift;
+
+        }
+
+        if ($this->checkXOut($x) || $this->checkYOut($y)
+            || $this->checkXOut($opositeX) || $this->checkYOut($opositeY)) {
+            $this->setIsLive(false);
+        }
+
+    }
     public function move($numberOfCeils)
     {
         if (!$this->canMoveOnThisNumberOfCeils($numberOfCeils)) {
@@ -318,6 +357,7 @@ abstract class Ship
         if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }
+        $this->checkOutOfBounds();
         return true;
     }
     public function getAll(): array

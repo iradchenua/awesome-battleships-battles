@@ -33,12 +33,9 @@
     <div id="jsInfo"
          data-game-field-width="{{ gameFieldWidth }}"
          data-game-field-height="{{ gameFieldHeight }}"
-         data-game-field-height="{{ gameFieldHeight }}"
     ></div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    {% if ships %}
-        {{ include('gameScript.html.twig', {'ships': ships}) }}
-    {% endif %}
+    {{ include('gameScript.html.twig', {'ships': ships}) }}
 {% endblock %}
