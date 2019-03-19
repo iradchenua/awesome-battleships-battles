@@ -2,8 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="71ae1385-574f-4d49-8f0a-cda650a60142" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/Entity/BlueShip.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Entity/Ship.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/Ship.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/packages/validator.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config/packages/validator.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/LobbyController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/LobbyController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/PhaseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/PhaseController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Entity/ShipFactory.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Entity/ShipFactory.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/game.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/game.html.twig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/shipDump.html.twig" beforeDir="false" afterPath="$PROJECT_DIR$/templates/shipDump.html.twig" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -67,20 +74,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Entity/Fleet.php">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Entity/BlueShip.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="544">
-              <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
+            <state relative-caret-position="306">
+              <caret line="24" column="36" selection-start-line="24" selection-start-column="36" selection-end-line="24" selection-end-column="36" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/Entity/Ship.php">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Controller/LobbyController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="558">
-              <caret line="317" column="58" selection-start-line="317" selection-start-column="58" selection-end-line="317" selection-end-column="58" />
+            <state relative-caret-position="252">
+              <caret line="106" column="74" selection-start-line="106" selection-start-column="12" selection-end-line="106" selection-end-column="74" />
+              <folding>
+                <element signature="e#6#84#0#PHP" expanded="true" />
+                <element signature="e#113#157#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -98,8 +109,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>MovedFromLastTurn</find>
-      <find>__cons</find>
       <find>incrementPhase</find>
       <find>shipName</find>
       <find>getP</find>
@@ -114,7 +123,6 @@
       <find>setMoved</find>
       <find>'moved'</find>
       <find>'moved</find>
-      <find>endShipTurn</find>
       <find>endPh</find>
       <find>endTu</find>
       <find>canMove</find>
@@ -128,6 +136,9 @@
       <find>canmove</find>
       <find>setId</find>
       <find>move</find>
+      <find>endShipTurn</find>
+      <find>session</find>
+      <find>flas</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -136,9 +147,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/base.html.twig" />
-        <option value="$PROJECT_DIR$/src/Entity/User.php" />
-        <option value="$PROJECT_DIR$/src/Repository/GameRepository.php" />
         <option value="$PROJECT_DIR$/public/js/canvasBasic.js" />
         <option value="$PROJECT_DIR$/src/Entity/Game.php" />
         <option value="$PROJECT_DIR$/src/Entity/TurnFormHandler.php" />
@@ -146,7 +154,6 @@
         <option value="$PROJECT_DIR$/src/Form/GameForm.php" />
         <option value="$PROJECT_DIR$/src/Form/GameTurnForm.php" />
         <option value="$PROJECT_DIR$/src/Form/GamePhaseForm.php" />
-        <option value="$PROJECT_DIR$/src/Entity/ShipFactory.php" />
         <option value="$PROJECT_DIR$/src/Form/FormFactory.php" />
         <option value="$PROJECT_DIR$/src/Form/PhaseFactory.php" />
         <option value="$PROJECT_DIR$/src/Form/GamePhase.php" />
@@ -168,7 +175,6 @@
         <option value="$PROJECT_DIR$/src/Controller/BaseController.php" />
         <option value="$PROJECT_DIR$/src/Service/FormCreator.php" />
         <option value="$PROJECT_DIR$/src/Controller/TurnController.php" />
-        <option value="$PROJECT_DIR$/src/Controller/PhaseController.php" />
         <option value="$PROJECT_DIR$/src/Service/JsonSerializer.php" />
         <option value="$PROJECT_DIR$/src/FormHandler/TurnHandler.php" />
         <option value="$PROJECT_DIR$/src/FormHandler/Handler.php" />
@@ -177,16 +183,21 @@
         <option value="$PROJECT_DIR$/src/Form/Phase/Move.php" />
         <option value="$PROJECT_DIR$/src/Entity/RedShip.php" />
         <option value="$PROJECT_DIR$/src/Controller/GameController.php" />
-        <option value="$PROJECT_DIR$/templates/game.html.twig" />
         <option value="$PROJECT_DIR$/public/css/game.css" />
         <option value="$PROJECT_DIR$/src/FormHandler/PhaseHandler/OrderHandler.php" />
-        <option value="$PROJECT_DIR$/templates/shipDump.html.twig" />
         <option value="$PROJECT_DIR$/src/Entity/Fleet.php" />
         <option value="$PROJECT_DIR$/src/Form/Phase/Order.php" />
-        <option value="$PROJECT_DIR$/src/Controller/LobbyController.php" />
         <option value="$PROJECT_DIR$/templates/gameScript.html.twig" />
+        <option value="$PROJECT_DIR$/src/Entity/BlueShip.php" />
+        <option value="$PROJECT_DIR$/src/Entity/ShipFactory.php" />
+        <option value="$PROJECT_DIR$/templates/shipDump.html.twig" />
+        <option value="$PROJECT_DIR$/src/Controller/LobbyController.php" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/.datagrid/cell" />
+        <option value="$PROJECT_DIR$/templates/base.html.twig" />
+        <option value="$PROJECT_DIR$/templates/game.html.twig" />
+        <option value="$PROJECT_DIR$/config/packages/validator.yaml" />
         <option value="$PROJECT_DIR$/src/Entity/Ship.php" />
+        <option value="$PROJECT_DIR$/src/Controller/PhaseController.php" />
       </list>
     </option>
   </component>
@@ -315,6 +326,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -325,56 +337,13 @@
             <path>
               <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
               <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
               <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="public" type="462c0819:PsiDirectoryNode" />
-              <item name="css" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Controller" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Entity" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Form" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="Form" type="462c0819:PsiDirectoryNode" />
-              <item name="Phase" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="FormHandler" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Awesome-Battleships-Battles" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="FormHandler" type="462c0819:PsiDirectoryNode" />
-              <item name="PhaseHandler" type="462c0819:PsiDirectoryNode" />
+              <item name="config" type="462c0819:PsiDirectoryNode" />
+              <item name="packages" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="Awesome-Battleships-Battles" type="b2602c69:ProjectViewProjectNode" />
@@ -385,7 +354,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -402,6 +370,9 @@
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Apache24\htdocs\Awesome-Battleships-Battles\src\Entity" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Apache24\htdocs\Awesome-Battleships-Battles\src\FormHandler" />
       <recent name="C:\Apache24\htdocs\Awesome-Battleships-Battles\src\Form\Phase" />
@@ -464,7 +435,8 @@
       <workItem from="1552585151295" duration="222000" />
       <workItem from="1552660325670" duration="1651000" />
       <workItem from="1552823216751" duration="20114000" />
-      <workItem from="1552908617738" duration="18358000" />
+      <workItem from="1552908617738" duration="21614000" />
+      <workItem from="1552955138423" duration="2402000" />
     </task>
     <task id="LOCAL-00001" summary="change security configuration">
       <created>1551806557424</created>
@@ -564,11 +536,25 @@
       <option name="project" value="LOCAL" />
       <updated>1552945925680</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="change move rules on implementation where you can move on &lt;= speed">
+      <created>1552945980252</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1552945980252</updated>
+    </task>
+    <task id="LOCAL-00016" summary="change move rules on implementation where you can move on speed, less handling if ship is stationery, handling, once on turn">
+      <created>1552949201256</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1552949201256</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="246392000" />
+    <option name="totallyTimeSpent" value="252050000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -584,14 +570,14 @@
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.22300771" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.22557841" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Database Console" order="0" weight="0.04037685" />
       <window_info anchor="bottom" id="Messages" order="1" weight="0.32974428" />
       <window_info anchor="bottom" id="Terminal" order="2" weight="0.32974428" />
       <window_info anchor="bottom" id="Database Changes" order="3" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="5" weight="0.5114401" />
+      <window_info anchor="bottom" id="Version Control" order="5" weight="0.04037685" />
       <window_info anchor="bottom" id="Docker" order="6" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="7" />
       <window_info anchor="bottom" id="Find" order="8" weight="0.32974428" />
@@ -608,6 +594,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -665,7 +661,9 @@
     <MESSAGE value="try to add move rules" />
     <MESSAGE value="add move rules" />
     <MESSAGE value="change move rules on implementation where you can move only on speed during turn" />
-    <option name="LAST_COMMIT_MESSAGE" value="change move rules on implementation where you can move only on speed during turn" />
+    <MESSAGE value="change move rules on implementation where you can move on &lt;= speed" />
+    <MESSAGE value="change move rules on implementation where you can move on speed, less handling if ship is stationery, handling, once on turn" />
+    <option name="LAST_COMMIT_MESSAGE" value="change move rules on implementation where you can move on speed, less handling if ship is stationery, handling, once on turn" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
@@ -676,17 +674,7 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/Entity/PhaseForm.php" />
-    <entry file="file://$PROJECT_DIR$/src/Form/GameTurnForm.php" />
-    <entry file="file://$PROJECT_DIR$/src/Form/GamePhaseForm.php" />
     <entry file="file://$PROJECT_DIR$/src/Form/PhaseFactory.php" />
-    <entry file="file://$PROJECT_DIR$/src/Entity/ShipFactory.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="17" column="5" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public/js/canvasBasic.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="612">
@@ -769,13 +757,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Manager/GamePanelManager.php" />
-    <entry file="file://$PROJECT_DIR$/src/FormHandler/PhaseHandler/ShootHandler.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="5" lean-forward="true" selection-start-column="5" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Controller/BaseController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
@@ -799,26 +780,6 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Service/FormCreator.php" />
     <entry file="file://$PROJECT_DIR$/src/Service/JsonSerializer.php" />
-    <entry file="file://$PROJECT_DIR$/src/Controller/TurnController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="425">
-          <caret line="37" selection-start-line="37" selection-end-line="37" />
-          <folding>
-            <element signature="e#114#159#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Form/Phase/Shoot.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-          <folding>
-            <element signature="e#113#161#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Form/Phase/FormPhaseFactory.php">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -849,30 +810,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Form/Phase/Move.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
-          <folding>
-            <element signature="e#113#161#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/FormHandler/PhaseHandler/PhaseHandler.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="276">
           <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Controller/PhaseController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="49" column="49" selection-start-line="49" selection-start-column="49" selection-end-line="49" selection-end-column="49" />
-          <folding>
-            <element signature="e#112#157#0#PHP" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -896,44 +837,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/game.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="236">
-          <caret line="19" column="42" selection-start-line="19" selection-start-column="42" selection-end-line="19" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Controller/GameController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="578">
-          <caret line="105" column="5" selection-start-line="105" selection-start-column="5" selection-end-line="105" selection-end-column="5" />
-          <folding>
-            <element signature="e#113#158#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/FormHandler/PhaseHandler/MoveHandler.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="389">
-          <caret line="36" column="40" selection-start-line="36" selection-start-column="40" selection-end-line="37" selection-end-column="53" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/FormHandler/PhaseHandler/OrderHandler.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
           <caret line="37" column="38" selection-start-line="37" selection-start-column="38" selection-end-line="37" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/shipDump.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="39" selection-start-line="9" selection-start-column="39" selection-end-line="9" selection-end-column="39" />
-          <folding>
-            <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -951,13 +858,6 @@
           <folding>
             <element signature="e#113#161#0#PHP" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="das://f9d7ce9d-dd39-4dee-82ff-8920c40fad5c/schema/abb/table/ship">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
         </state>
       </provider>
     </entry>
@@ -985,17 +885,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Controller/LobbyController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="274">
-          <caret line="115" column="30" selection-start-line="115" selection-start-column="30" selection-end-line="115" selection-end-column="30" />
-          <folding>
-            <element signature="e#6#84#0#PHP" expanded="true" />
-            <element signature="e#113#157#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Entity/Fleet.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="544">
@@ -1003,10 +892,137 @@
         </state>
       </provider>
     </entry>
+    <entry file="das://f9d7ce9d-dd39-4dee-82ff-8920c40fad5c/schema/abb/table/ship">
+      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
+        <state>
+          <filtering enabled="true" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Entity/ShipFactory.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="16" column="37" selection-start-line="16" selection-start-column="37" selection-end-line="16" selection-end-column="37" />
+          <folding>
+            <element signature="e#108#131#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/shipDump.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="34" selection-start-line="6" selection-start-column="34" selection-end-line="6" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/game.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="344">
+          <caret line="24" column="23" selection-start-line="24" selection-start-column="23" selection-end-line="24" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/base.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="28" selection-start-line="21" selection-start-column="28" selection-end-line="21" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/FormHandler/PhaseHandler/ShootHandler.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="5" lean-forward="true" selection-start-column="5" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Form/Phase/Shoot.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+          <folding>
+            <element signature="e#113#161#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Form/Phase/Move.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="21" column="35" selection-start-line="21" selection-start-column="35" selection-end-line="21" selection-end-column="35" />
+          <folding>
+            <element signature="e#113#161#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/FormHandler/PhaseHandler/MoveHandler.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="412">
+          <caret line="36" column="40" selection-start-line="36" selection-start-column="40" selection-end-line="37" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Controller/TurnController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="37" selection-start-line="37" selection-end-line="37" />
+          <folding>
+            <element signature="e#114#159#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Controller/GameController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="108" column="21" selection-start-line="108" selection-start-column="21" selection-end-line="108" selection-end-column="21" />
+          <folding>
+            <element signature="e#113#158#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Controller/LobbyController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="252">
+          <caret line="106" column="74" selection-start-line="106" selection-start-column="12" selection-end-line="106" selection-end-column="74" />
+          <folding>
+            <element signature="e#6#84#0#PHP" expanded="true" />
+            <element signature="e#113#157#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Entity/Ship.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="317" column="58" selection-start-line="317" selection-start-column="58" selection-end-line="317" selection-end-column="58" />
+        <state relative-caret-position="17">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/packages/validator.yaml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="4" selection-start-line="4" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Controller/PhaseController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="559">
+          <caret line="73" column="8" selection-start-line="73" selection-start-column="8" selection-end-line="73" selection-end-column="8" />
+          <folding>
+            <element signature="e#112#157#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Entity/BlueShip.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="24" column="36" selection-start-line="24" selection-start-column="36" selection-end-line="24" selection-end-column="36" />
         </state>
       </provider>
     </entry>

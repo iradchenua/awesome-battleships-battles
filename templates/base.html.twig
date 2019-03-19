@@ -10,6 +10,8 @@
     <body>
         {% block body %}
             <h1>Welcome to the game!</h1>
+        {% endblock %}
+        {% block flash %}
             {% if app.request.hasPreviousSession %}
                 {% for message in app.flashes('error') %}
                     <div class="flash-notice">
@@ -17,7 +19,7 @@
                     </div>
                 {% endfor %}
             {% endif %}
-        {% endblock %}
+        {% endblock flash %}
         {% block javascripts %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         {% endblock %}

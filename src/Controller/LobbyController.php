@@ -120,8 +120,8 @@ class LobbyController extends BaseController
                 ]
             ]);
             $this->giveShipsToUser($game->getId(),  $game->getUserId2(), [
-                'redship' => [
-                    'x' => 75,
+                'blueship' => [
+                    'x' => 35,
                     'y' => 0,
                     'dirX' => -1,
                     'dirY' => 0

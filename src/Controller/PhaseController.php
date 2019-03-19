@@ -68,6 +68,7 @@ class PhaseController extends BaseController
         ]);
 
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid())
             $handler->handle();
 

@@ -21,6 +21,9 @@
         {% else %}
             <p>'There are not free ship'</p>
         {% endif %}
+        {%  block flash %}
+            {{ parent() }}
+        {% endblock %}
         {%  if phaseForm %}
             <h3>{{  phaseName }} phase</h3>
             {{ form(phaseForm) }}

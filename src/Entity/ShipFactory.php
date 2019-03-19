@@ -8,11 +8,13 @@
 
 namespace App\Entity;
 use App\Entity\RedShip;
+use App\Entity\BlueShip;
 
 abstract class ShipFactory
 {
     static private $shipTypes = [
-        'redship' => RedShip::class
+        'redship' => RedShip::class,
+        'blueship' => BlueShip::class
     ];
     static public function createShip($shipType, array $params)
     {
