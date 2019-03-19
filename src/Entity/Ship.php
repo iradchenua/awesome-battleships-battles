@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class Ship
 {
     protected const CLASS_NAME = "Ship";
-    protected const COLOR = "none";
+    protected const IMG = "none";
     protected const WIDTH = 0;
     protected const HEIGHT = 0;
     protected const HANDLING = 0;
@@ -177,9 +177,9 @@ abstract class Ship
         return static::CLASS_NAME;
     }
 
-    public function getColor()
+    public function getImg()
     {
-        return static::COLOR;
+        return static::IMG;
     }
 
     public function getWidth()
@@ -274,13 +274,6 @@ abstract class Ship
 
         $this->setDirX($newDirX);
         $this->setDirY($newDirY);
-        $shift = ($this->getWidth() - $this->getHeight()) / 2;
-        if ($oldDirX == 0) {
-            $shift = -$shift;
-        }
-
-        $this->setX($this->getX() + $shift );
-        $this->setY($this->getY() + $shift );
 
     }
     private function canMoveOnThisNumberOfCeils($numberOfCeils)
@@ -314,7 +307,7 @@ abstract class Ship
 
         $this->setX($this->getX() + $numberOfCeils * $this->getDirX());
         $this->setY($this->getY() + $numberOfCeils * $this->getDirY());
-        $this->setMoved($this->getMoved() + $numberOfCeils);
+        $this->setMoved($numberOfCeils);
         if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }

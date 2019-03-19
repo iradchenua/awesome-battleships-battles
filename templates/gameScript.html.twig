@@ -6,10 +6,21 @@
                     this[prop] = params[prop];
                 }
             }
-            this.draw();
+            this.image = new Image();
+            this.image.src = this.img;
+            this.image.onload = this.draw.bind(this);
         }
         draw() {
             this.drawer.drawShip(this);
+        }
+
+        getAngle() {
+            if (this.dirX === 0) {
+                return this.dirY === 1 ? -Math.PI / 2 : Math.PI / 2;
+            }
+            else {
+                return this.dirX === 1 ? 0 : Math.PI;
+            }
         }
     }
 
@@ -39,17 +50,32 @@
             return this.yStep * (-y +  this.gameFieldHeight / 2);
         }
         drawShip(ship) {
-            this.ctx.fillStyle = ship.color;
 
             let width = ship.width;
             let height = ship.height;
-            if (ship.dirX === 0) {
-                [width, height] = [height, width];
-            }
-            this.ctx.fillRect(this.xToCanvasCords(ship.x), this.yToCanvasCords(ship.y),
-                this.xStep * width, this.yStep *height);
-            console.log('dirX: ' + ship.dirX);
-            console.log('dirY: ' + ship.dirY);
+            let x = this.xToCanvasCords(ship.x);
+            let y = this.yToCanvasCords(ship.y);
+
+            this.ctx.save();
+
+
+            width *= this.xStep;
+            height *= this.yStep;
+
+           this.ctx.translate(x + width / 2, y + height / 2);
+            this.ctx.rotate(ship.getAngle());
+
+            x = -width / 2;
+            y = -height / 2;
+
+
+            this.ctx.strokeStyle = ship.name.split('ship')[0];
+            this.ctx.strokeRect(x, y,
+                width,height);
+            this.ctx.drawImage(ship.image,
+                                x, y,
+                                width, height);
+            this.ctx.restore();
         }
     }
 
