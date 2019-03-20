@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorColumn(name="name", type = "string", length=255)
  * @ORM\Entity(repositoryClass="App\Repository\ShipRepository")
  */
-abstract class Ship
+abstract class Ship extends EntityOnMap
 {
     protected const CLASS_NAME = "Ship";
     protected const IMG = "none";
@@ -46,7 +46,7 @@ abstract class Ship
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var int
@@ -136,11 +136,6 @@ abstract class Ship
      * @ORM\Column(name="is_live", type="boolean", nullable=false)
      */
     protected $isLive = true;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getName(): ?string
     {
@@ -381,30 +376,6 @@ abstract class Ship
         ]);
     }
 
-    public function getX(): ?int
-    {
-        return $this->x;
-    }
-
-    public function setX(int $x): self
-    {
-        $this->x = $x;
-
-        return $this;
-    }
-
-    public function getY(): ?int
-    {
-        return $this->y;
-    }
-
-    public function setY(int $y): self
-    {
-        $this->y = $y;
-
-        return $this;
-    }
-
     public function getDirX(): ?int
     {
         return $this->dirX;
@@ -500,13 +471,6 @@ abstract class Ship
     public function setSpeed(int $speed): self
     {
         $this->speed = $speed;
-
-        return $this;
-    }
-
-    public function setId(int $id): self
-    {
-        $this->id = $id;
 
         return $this;
     }
