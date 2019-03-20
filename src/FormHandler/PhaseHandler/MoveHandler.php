@@ -36,6 +36,7 @@ class MoveHandler extends PhaseHandler
             $this->ship->rotate($where);
             $this->entityManager->merge($this->ship);
         }
+        return (true);
     }
     protected function onMove()
     {

@@ -1,5 +1,5 @@
 <script>
-    class SpaceShip {
+    class EntityOnMap {
         constructor(params) {
             for (let prop in params) {
                 if (params.hasOwnProperty(prop)) {
@@ -11,9 +11,16 @@
             this.image.onload = this.draw.bind(this);
         }
         draw() {
+            this.drawer.drawEntityOnMap(this);
+        }
+    }
+    class Obstacle extends EntityOnMap {
+
+    }
+    class SpaceShip extends EntityOnMap {
+        draw() {
             this.drawer.drawShip(this);
         }
-
         getAngle() {
             if (this.dirX === 0) {
                 return this.dirY === 1 ? -Math.PI / 2 : Math.PI / 2;
@@ -50,14 +57,27 @@
         yToCanvasCords(y) {
             return this.yStep * (-y +  this.gameFieldHeight / 2);
         }
-        drawShip(ship) {
+        drawEntityOnMap(entity) {
+            const width = this.xStep * entity.width;
+            const height =  this.yStep * entity.height;
 
-            let width = ship.width;
-            let height = ship.height;
+            let x = this.xToCanvasCords(entity.x);
+            let y = this.yToCanvasCords(entity.y);
+
+
+            this.ctx.strokeStyle = '#00FF00';
+            this.ctx.strokeRect(x, y,
+                width, height);
+            this.ctx.drawImage(entity.image,
+                x, y,
+                width, height);
+        }
+        drawShip(ship) {
+            const width = this.xStep * ship.width;
+            const height = this.yStep * ship.height;
+
             let x = this.xToCanvasCords(ship.x);
             let y = this.yToCanvasCords(ship.y);
-            width *= this.xStep;
-            height *= this.yStep;
 
             this.ctx.save();
 
@@ -80,6 +100,25 @@
         return (JSON.parse(str.replace(/&quot;|\\&quot;/g, '"')));
     }
 
+    function createShips(shipsFromServer, drawer) {
+        for(let prop in shipsFromServer) {
+            if (shipsFromServer.hasOwnProperty(prop)) {
+                shipsFromServer[prop].forEach(function(shipParams) {
+                    shipParams.drawer = drawer;
+                    new SpaceShip(shipParams);
+                });
+            }
+        }
+    }
+
+    function createObstacles(ObstaclesFromServer, drawer) {
+        ObstaclesFromServer.forEach(function(ObstacleParams) {
+            console.log(ObstacleParams);
+            ObstacleParams.drawer = drawer;
+            new Obstacle(ObstacleParams);
+        });
+    }
+
     $(document).ready(function() {
         const jsInfo = $('#jsInfo');
 
@@ -93,15 +132,11 @@
         });
 
         const shipsFromServer = parseJSON("{{ ships }}");
-        const ships = [];
-        console.log(shipsFromServer);
-        for(let prop in shipsFromServer) {
-            if (shipsFromServer.hasOwnProperty(prop)) {
-                shipsFromServer[prop].forEach(function(shipParams) {
-                    shipParams.drawer = drawer;
-                    ships.push(new SpaceShip(shipParams));
-                });
-            }
-        }
+        const obstaclesFromServer = parseJSON("{{ obstacles }}");
+
+
+        createShips(shipsFromServer, drawer);
+        createObstacles(obstaclesFromServer, drawer);
+
     });
 </script>

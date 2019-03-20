@@ -23,13 +23,16 @@ class PhaseController extends BaseController
      * @var \App\Form\Phase\FormPhaseFactory
      */
     private $formPhaseFactory;
+    protected $obstacles;
 
     public function __construct(
         \App\Repository\GameRepository $gameRepository,
         \Doctrine\ORM\EntityManagerInterface $entityManager,
-        \App\Form\Phase\FormPhaseFactory $formPhaseFactory
+        \App\Form\Phase\FormPhaseFactory $formPhaseFactory,
+        \App\Repository\ObstacleRepository $obstacleRepository
     ) {
         $this->formPhaseFactory = $formPhaseFactory;
+        $this->obstacles = $obstacleRepository->getObstacles();
         parent::__construct($gameRepository, $entityManager);
     }
 
@@ -76,8 +79,13 @@ class PhaseController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $message = $handler->handle();
+            $ship->checkDead($this->obstacles);
+            $this->entityManager->merge($ship);
+            $this->entityManager->flush();
         }
+
         $message = $ship->getIsLive() ? $message : $ship->getName() . ' is dead';
+
         if (is_string($message)) {
             $this->addFlash('error', $message);
         } else {

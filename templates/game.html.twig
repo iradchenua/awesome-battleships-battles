@@ -37,5 +37,5 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    {{ include('gameScript.html.twig', {'ships': ships}) }}
+    {{ include('gameScript.html.twig', {'ships': ships}, {'obstacles': obstacles}) }}
 {% endblock %}

@@ -77,4 +77,47 @@ abstract class EntityOnMap
 
         return $this;
     }
+
+    public function getImg()
+    {
+        return static::IMG;
+    }
+
+    public function getWidth()
+    {
+        return static::WIDTH;
+    }
+
+    public function getHeight()
+    {
+        return static::HEIGHT;
+    }
+
+    public function getRect() {
+        return ([
+            'x' => $this->getX(),
+            'y' => $this->getY(),
+            'width' => $this->getWidth(),
+            'height' => $this->getHeight()
+        ]);
+    }
+
+    protected function isIntersectWith(EntityOnMap $entity) {
+        $rect1 = $this->getRect();
+        $rect2 = $entity->getRect();
+
+        return  $rect1['x'] < $rect2['x'] + $rect2['width'] &&
+                $rect1['x'] + $rect1['width'] > $rect2['x'] &&
+                $rect1['y'] > $rect2['y'] - $rect2['height'] &&
+                $rect1['y'] - $rect1['height'] < $rect2['y'];
+    }
+
+    protected function intersectWithEntities($entities) {
+        foreach($entities as $entity) {
+            if ($this->isIntersectWith($entity)) {
+                return $entity;
+            }
+        }
+        return false;
+    }
 }

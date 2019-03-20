@@ -178,21 +178,6 @@ abstract class Ship extends EntityOnMap
         return static::CLASS_NAME;
     }
 
-    public function getImg()
-    {
-        return static::IMG;
-    }
-
-    public function getWidth()
-    {
-        return static::WIDTH;
-    }
-
-    public function getHeight()
-    {
-        return static::HEIGHT;
-    }
-
     public function getEnginePower()
     {
         return static::ENGINE_POWER;
@@ -263,7 +248,7 @@ abstract class Ship extends EntityOnMap
             return;
         }
 
-        //$this->setCanTurn(false);
+        $this->setCanTurn(false);
         $oldDirX = $this->getDirX();
         $oldDirY = $this->getDirY();
 
@@ -276,8 +261,6 @@ abstract class Ship extends EntityOnMap
 
         $this->setDirX($newDirX);
         $this->setDirY($newDirY);
-
-        $this->checkOutOfBounds();
     }
     private function canMoveOnThisNumberOfCeils($numberOfCeils)
     {
@@ -299,11 +282,35 @@ abstract class Ship extends EntityOnMap
 
         return $numberOfCeils == $this->getSpeed();
     }
+
     private function checkXOut($x) {
         return $x <  (-Game::GAME_FIELD_WIDTH / 2) || $x >  Game::GAME_FIELD_WIDTH / 2;
     }
+
     private function checkYOut($y) {
         return $y < (-Game::GAME_FIELD_HEIGHT / 2) || $y > Game::GAME_FIELD_HEIGHT / 2;
+    }
+    public function getRect() {
+        $rect = parent::getRect();
+
+        $shift = ($rect['width'] - $rect['height']) / 2;
+
+        if ($this->dirY === 1) {
+            $rect['x'] += $shift;
+            $rect['y'] += $shift;
+
+        } else if ($this->dirY === -1) {
+            $rect['x'] -= $shift;
+            $rect['y'] -= $shift;
+        }
+
+        if ($this->dirX === 0) {
+            $w = $rect['width'];
+            $rect['width'] = $rect['height'];
+            $rect['height'] = $w;
+        }
+
+        return $rect;
     }
     private function checkOutOfBounds()
     {
@@ -314,28 +321,34 @@ abstract class Ship extends EntityOnMap
 
         $shift = ($width - $height) / 2;
 
-        $opositeX = $x + $this->getWidth();
-        $opositeY = $y - $this->getHeight();
+        $oppositeX = $x + $this->getWidth();
+        $oppositeY = $y - $this->getHeight();
 
         if ($this->dirY === 1) {
             $x += $shift;
             $y += $shift;
-            $opositeX += $shift;
-            $opositeY += $shift;
+            $oppositeX += $shift;
+            $oppositeY += $shift;
 
         } else if ($this->dirY === -1) {
             $x -= $shift;
             $y -= $shift;
-            $opositeX += $shift;
-            $opositeY += $shift;
-
+            $oppositeX += $shift;
+            $oppositeY += $shift;
         }
 
         if ($this->checkXOut($x) || $this->checkYOut($y)
-            || $this->checkXOut($opositeX) || $this->checkYOut($opositeY)) {
+        || $this->checkXOut($oppositeX) || $this->checkYOut($oppositeY)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function checkDead($obstacles)
+    {
+        if ($this->checkOutOfBounds() || $this->intersectWithEntities($obstacles) != false) {
             $this->setIsLive(false);
         }
-
     }
     public function move($numberOfCeils)
     {
@@ -352,7 +365,6 @@ abstract class Ship extends EntityOnMap
         if ($this->getMoved() >= $this->getHandling()) {
             $this->setCanTurn(true);
         }
-        $this->checkOutOfBounds();
         return true;
     }
     public function getAll(): array

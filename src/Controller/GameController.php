@@ -36,12 +36,16 @@ class GameController extends BaseController
      */
     private $formPhaseFactory;
 
+    private $obstacles;
+
     public function __construct(
         \App\Repository\GameRepository $gameRepository,
         \Doctrine\ORM\EntityManagerInterface $entityManager,
-        \App\Form\Phase\FormPhaseFactory $formPhaseFactory
+        \App\Form\Phase\FormPhaseFactory $formPhaseFactory,
+        \App\Repository\ObstacleRepository $obstacleRepository
     ) {
         $this->formPhaseFactory = $formPhaseFactory;
+        $this->obstacles = $obstacleRepository->getObstacles();
         parent::__construct($gameRepository, $entityManager);
     }
 
@@ -83,7 +87,6 @@ class GameController extends BaseController
         if ($notActivatedShip) {
             $phaseName = $notActivatedShip->getPhaseName();
         }
-
         return $this->render('game.html.twig', [
                 'width' => self::CANVAS_WIDTH,
                 'height' => self::CANVAS_HEIGHT,
@@ -91,6 +94,7 @@ class GameController extends BaseController
                 'gameFieldHeight' => Game::GAME_FIELD_HEIGHT,
                 'notActivatedShip' => $notActivatedShip,
                 'ships' => $this->serialize($ships),
+                'obstacles' => $this->serialize($this->obstacles),
                 'leaveForm' => $this->getView($leaveForm),
                 'turnForm' => $this->getView($turnForm),
                 'phaseForm' => $this->formPhaseFactory->createPhaseFormView($notActivatedShip),
