@@ -39,8 +39,8 @@ class ShipRepository extends ServiceEntityRepository
     public function getShipsForGame($gameId)
     {
         $shipsFromBase = $this->createQueryBuilder('s')
-            ->andWhere('s.gameId = :gameId and s.isLive = :isLive')
-            ->setParameter('isLive', true)
+            ->andWhere('s.gameId = :gameId and s.hullPoints > :minHullPoints')
+            ->setParameter('minHullPoints', 0)
             ->setParameter('gameId', $gameId)
             ->getQuery()
             ->getResult();

@@ -27,6 +27,7 @@ abstract class Ship extends EntityOnMap
     protected const HANDLING = 0;
     protected const SPEED = 0;
     protected const PP = 0;
+    protected const HUll_POINTS = 0;
     protected const ENGINE_POWER = "none";
 
     public const    ORDER_PHASE = 0;
@@ -130,12 +131,13 @@ abstract class Ship extends EntityOnMap
      * @ORM\Column(name="speed", type="integer", nullable=false)
      */
     protected $speed;
+
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_live", type="boolean", nullable=false)
+     * @ORM\Column(name="hull_points", type="integer", nullable=false)
      */
-    protected $isLive = true;
+    protected $hullPoints;
 
     public function getName(): ?string
     {
@@ -197,19 +199,16 @@ abstract class Ship extends EntityOnMap
 
     public function __construct(array $params)
     {
-
-        $this->setSpeed(static::SPEED);
-
         if (isset($params['id'])) {
             $this->setId($params['id']);
             $this->setIsStationery($params['isStationery']);
             $this->setCanTurn($params['canTurn']);
             $this->setMoved($params['moved']);
             $this->setSpeed($params['speed']);
+            $this->setHullPoints($params['hullPoints']);
             $this->setPhase($params['phase']);
             $this->setIsActivated($params['isActivated']);
             $this->setSpeed($params['speed']);
-            $this->setIsLive($params['isLive']);
         }
 
         $this->setGameId($params['gameId']);
@@ -293,63 +292,71 @@ abstract class Ship extends EntityOnMap
     public function getRect() {
         $rect = parent::getRect();
 
-        $shift = ($rect['width'] - $rect['height']) / 2;
+        $rect['oppositeX'] = $rect['x'] + $this->getWidth();
+        $rect['oppositeY'] = $rect['y'] - $this->getHeight();
 
-        if ($this->dirY === 1) {
-            $rect['x'] += $shift;
-            $rect['y'] += $shift;
+        $shift = $this->dirY * ($rect['width'] - $rect['height']) / 2;
 
-        } else if ($this->dirY === -1) {
-            $rect['x'] -= $shift;
-            $rect['y'] -= $shift;
-        }
+        $rect['x'] += $shift;
+        $rect['y'] += $shift;
+        $rect['oppositeX'] += $shift;
+        $rect['oppositeY'] += $shift;
 
         if ($this->dirX === 0) {
-            $w = $rect['width'];
+            $width = $rect['width'];
             $rect['width'] = $rect['height'];
-            $rect['height'] = $w;
+            $rect['height'] = $width;
         }
 
         return $rect;
     }
-    private function checkOutOfBounds()
+    public function checkOutOfBounds()
     {
-        $x = $this->getX();
-        $y = $this->getY();
-        $width = $this->getWidth();
-        $height = $this->getHeight();
+        $rect = $this->getRect();
 
-        $shift = ($width - $height) / 2;
-
-        $oppositeX = $x + $this->getWidth();
-        $oppositeY = $y - $this->getHeight();
-
-        if ($this->dirY === 1) {
-            $x += $shift;
-            $y += $shift;
-            $oppositeX += $shift;
-            $oppositeY += $shift;
-
-        } else if ($this->dirY === -1) {
-            $x -= $shift;
-            $y -= $shift;
-            $oppositeX += $shift;
-            $oppositeY += $shift;
+        if ($this->checkXOut($rect['x']) || $this->checkYOut($rect['y'])
+        || $this->checkXOut($rect['oppositeX']) || $this->checkYOut($rect['oppositeY'])) {
+            $this->setHullPoints(0);
         }
+    }
+    public function checkCollisionWithShips($ships)
+    {
+        $interShip = false;
+        foreach($ships as $userId => $usersShips) {
+            $interShip = $this->intersectWithEntities($usersShips);
+            if ($interShip) {
+                break;
+            }
+        }
+        if ($interShip != false) {
+            $this->setIsStationery(true);
+            if ($this->getMoved() > $this->getHandling()) {
+                $thisHull = $this->getHullPoints();
+                $interHull =  $interShip->getHullPoints();
+                $this->setHullPoints($thisHull - $interHull);
+                $interShip->setHullPoints($interHull - $thisHull);
+            }
+            return $interShip;
+        }
+        return false;
+    }
+    public function takeDamage($damage)
+    {
+        $newHullPoints = $this->getHullPoints() - $damage;
 
-        if ($this->checkXOut($x) || $this->checkYOut($y)
-        || $this->checkXOut($oppositeX) || $this->checkYOut($oppositeY)) {
-            return true;
+        $this->setHullPoints($newHullPoints < 0 ? 0 : $newHullPoints);
+    }
+    public function checkCollisionWithObstacles($obstacles)
+    {
+        /**
+         * @var $interShip Ship
+         */
+        if ($this->intersectWithEntities($obstacles) != false) {
+            $this->setHullPoints(0);
         }
         return false;
     }
 
-    public function checkDead($obstacles)
-    {
-        if ($this->checkOutOfBounds() || $this->intersectWithEntities($obstacles) != false) {
-            $this->setIsLive(false);
-        }
-    }
     public function move($numberOfCeils)
     {
         if (!$this->canMoveOnThisNumberOfCeils($numberOfCeils)) {
@@ -379,8 +386,8 @@ abstract class Ship extends EntityOnMap
             'dirY' => $this->dirY,
             'moved' => $this->getMoved(),
             'speed' => $this->getSpeed(),
+            'hullPoints' => $this->getHullPoints(),
             'isStationery' => $this->isStationery,
-            'isLive' => $this->getIsLive(),
             'canTurn' => $this->getCanTurn(),
             'name' => static::CLASS_NAME,
             'isActivated' => $this->isActivated,
@@ -489,12 +496,17 @@ abstract class Ship extends EntityOnMap
 
     public function getIsLive(): ?bool
     {
-        return $this->isLive;
+        return $this->getHullPoints() > 0;
     }
 
-    public function setIsLive(bool $isLive): self
+    public function getHullPoints(): ?int
     {
-        $this->isLive = $isLive;
+        return $this->hullPoints;
+    }
+
+    public function setHullPoints(int $hullPoints): self
+    {
+        $this->hullPoints = $hullPoints;
 
         return $this;
     }

@@ -28,5 +28,20 @@ class RedShip extends Ship
     protected const SPEED = 15;
     protected const WIDTH = 40;
     protected const HEIGHT = 10;
+    protected const HUll_POINTS = 5;
     protected const ENGINE_POWER = 10;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="hull_points", type="integer", nullable=false)
+     */
+    protected $hullPoints = self::HUll_POINTS;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="speed", type="integer", nullable=false)
+     */
+    protected $speed = self::SPEED;
 }

@@ -88,19 +88,19 @@ class GameController extends BaseController
             $phaseName = $notActivatedShip->getPhaseName();
         }
         return $this->render('game.html.twig', [
-                'width' => self::CANVAS_WIDTH,
-                'height' => self::CANVAS_HEIGHT,
-                'gameFieldWidth' => Game::GAME_FIELD_WIDTH,
-                'gameFieldHeight' => Game::GAME_FIELD_HEIGHT,
-                'notActivatedShip' => $notActivatedShip,
-                'ships' => $this->serialize($ships),
-                'obstacles' => $this->serialize($this->obstacles),
-                'leaveForm' => $this->getView($leaveForm),
-                'turnForm' => $this->getView($turnForm),
-                'phaseForm' => $this->formPhaseFactory->createPhaseFormView($notActivatedShip),
-                'phaseName' => $phaseName,
-                'userId1' => $this->game->getUserId1(),
-                'userId2' => $this->game->getUserId2()
+                    'width' => self::CANVAS_WIDTH,
+                    'height' => self::CANVAS_HEIGHT,
+                    'gameFieldWidth' => Game::GAME_FIELD_WIDTH,
+                    'gameFieldHeight' => Game::GAME_FIELD_HEIGHT,
+                    'notActivatedShip' => $notActivatedShip,
+                    'ships' => $this->serialize($ships),
+                    'obstacles' => $this->serialize($this->obstacles),
+                    'leaveForm' => $this->getView($leaveForm),
+                    'turnForm' => $this->getView($turnForm),
+                    'phaseForm' => $this->formPhaseFactory->createPhaseFormView($notActivatedShip),
+                    'phaseName' => $phaseName,
+                    'userId1' => $this->game->getUserId1(),
+                    'userId2' => $this->game->getUserId2()
         ]);
     }
 
@@ -125,8 +125,9 @@ class GameController extends BaseController
 
     private function serialize($ships)
     {
-        if (!$ships)
+        if (!$ships) {
             return ('');
+        }
 
         $encodes = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];

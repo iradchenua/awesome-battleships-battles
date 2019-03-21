@@ -113,7 +113,14 @@ abstract class EntityOnMap
     }
 
     protected function intersectWithEntities($entities) {
+        /**
+         * @var EntityOnMap $entity
+         */
         foreach($entities as $entity) {
+            if ($entity->getId() == $this->getId() &&
+                get_class($entity) == get_class($this)) {
+                continue ;
+            }
             if ($this->isIntersectWith($entity)) {
                 return $entity;
             }

@@ -69,6 +69,8 @@ class PhaseController extends BaseController
             'form' => $form,
             'fleet' => $fleet,
             'ship' => $ship,
+            'ships' => $ships,
+            'obstacles' => $this->obstacles,
             'game' => $this->game,
             'entityManager' => $this->entityManager
         ]);
@@ -79,9 +81,6 @@ class PhaseController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $message = $handler->handle();
-            $ship->checkDead($this->obstacles);
-            $this->entityManager->merge($ship);
-            $this->entityManager->flush();
         }
 
         $message = $ship->getIsLive() ? $message : $ship->getName() . ' is dead';
