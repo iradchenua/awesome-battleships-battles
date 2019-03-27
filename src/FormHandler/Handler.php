@@ -26,12 +26,11 @@ class Handler
     public function handle()
     {
         $valid = true;
-        foreach($this->nameHandlersPairs as $name => $handler) {
-            if ($this->form->get($name)->isClicked()) {
-                $this->eventName = $name;
-                $valid = $this->{$handler}();
-                break;
-            }
+        if ($this->form->getClickedButton() &&
+            ($name = $this->form->getClickedButton()->getName()) &&
+            isset($this->nameHandlersPairs[$name])) {
+            $this->eventName = $name;
+            $valid = $this->{$this->nameHandlersPairs[$name]}();
         }
         $this->entityManager->flush();
         return $valid;

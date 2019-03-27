@@ -8,24 +8,20 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use App\Entity\User;
+
 use App\Entity\Game;
 use App\Entity\Ship;
 use App\Entity\Fleet;
-use App\Form\Phase\Move;
-use App\Form\Phase\Order;
-use App\Form\Phase\Shoot;
 use App\Form\GameTurn;
-use App\Manager\GamePanelManager;
-use App\Service\FormCreator;
 
 class GameController extends BaseController
 {
@@ -42,10 +38,13 @@ class GameController extends BaseController
         \App\Repository\GameRepository $gameRepository,
         \Doctrine\ORM\EntityManagerInterface $entityManager,
         \App\Form\Phase\FormPhaseFactory $formPhaseFactory,
-        \App\Repository\ObstacleRepository $obstacleRepository
+        \App\Repository\ObstacleRepository $obstacleRepository,
+        \App\Service\JsonSerializer $jsonSerializer
     ) {
         $this->formPhaseFactory = $formPhaseFactory;
-        $this->obstacles = $obstacleRepository->getObstacles();
+        $this->obstacles = $obstacleRepository->getObstacles() ?? [];
+        $this->jsonSerializer = $jsonSerializer;
+
         parent::__construct($gameRepository, $entityManager);
     }
 
@@ -57,83 +56,74 @@ class GameController extends BaseController
         $user = $this->getUser();
         $userId = $user->getId();
 
-        $doctrine = $this->getDoctrine();
-
         $this->game = $this->gameRepository
                             ->getGameForUserId($userId);
 
         if (!$this->game)
             return $this->redirectToRoute('lobby');
 
-        $this->entityManager = $doctrine->getManager();
-        $ships = false;
-        if ($this->game->getStatus() == Game::STATUS_PLAY) {
-            /** @var Ship[] $ships */
-            $ships = $doctrine->getRepository(Ship::class)
-                        ->getShipsForGame($this->game->getId());
-        }
-
         $leaveForm = $this->createLeaveForm();
         $turnForm = false;
-        $notActivatedShip = false;
 
         if ($userId == $this->game->getCurrentUserId()) {
             $turnForm = $this->createTurnForm();
-            $fleet = new Fleet($ships, $userId);
-            /** @var Ship $notActivatedShip */
-            $notActivatedShip = $fleet->getNotActivatedShip();
         }
-        $phaseName = "";
-        if ($notActivatedShip) {
-            $phaseName = $notActivatedShip->getPhaseName();
-        }
+
         return $this->render('game.html.twig', [
-                    'width' => self::CANVAS_WIDTH,
-                    'height' => self::CANVAS_HEIGHT,
-                    'gameFieldWidth' => Game::GAME_FIELD_WIDTH,
-                    'gameFieldHeight' => Game::GAME_FIELD_HEIGHT,
-                    'notActivatedShip' => $notActivatedShip,
-                    'ships' => $this->serialize($ships),
-                    'obstacles' => $this->serialize($this->obstacles),
                     'leaveForm' => $this->getView($leaveForm),
                     'turnForm' => $this->getView($turnForm),
-                    'phaseForm' => $this->formPhaseFactory->createPhaseFormView($notActivatedShip),
-                    'phaseName' => $phaseName,
+                    'orderPhase' => $this->formPhaseFactory->createPhaseFormView(Ship::ORDER_PHASE),
+                    'movePhase' => $this->formPhaseFactory->createPhaseFormView(Ship::MOVEMENT_PHASE),
+                    'shootPhase' => $this->formPhaseFactory->createPhaseFormView(Ship::SHOOT_PHASE),
                     'userId1' => $this->game->getUserId1(),
                     'userId2' => $this->game->getUserId2()
         ]);
     }
 
-    private function getView($form)
+    /**
+     * @Route("/init", name="init")
+     */
+    public function init(Request $request)
     {
-        if ($form)
-            return $form->createView();
-        return (false);
-    }
-
-    private function createLeaveForm() {
-        return ($this->createFormBuilder()
-            ->add('leave', SubmitType::class)
-            ->setAction($this->generateUrl('leave'))
-            ->getForm());
-    }
-    private function createTurnForm() {
-        return $this->createForm(GameTurn::class, null, [
-            'action' => $this->generateUrl('turn')
+        return new JsonResponse([
+            'width' => self::CANVAS_WIDTH,
+            'height' => self::CANVAS_HEIGHT,
+            'gameFieldWidth' => Game::GAME_FIELD_WIDTH,
+            'gameFieldHeight' => Game::GAME_FIELD_HEIGHT,
+            'obstacles' => $this->jsonSerializer->serialize($this->obstacles)
         ]);
     }
-
-    private function serialize($ships)
+    /**
+     * @Route("/ships", name="ships")
+     */
+    public function ships(Request $request)
     {
-        if (!$ships) {
-            return ('');
+        $user = $this->getUser();
+        $userId = $user->getId();
+
+        $this->game = $this->gameRepository
+            ->getGameForUserId($userId);
+
+        $doctrine = $this->getDoctrine();
+        $ships = [];
+        if ($this->game->getStatus() == Game::STATUS_PLAY) {
+            /** @var Ship[] $ships */
+            $ships = $doctrine->getRepository(Ship::class)
+                ->getShipsForGame($this->game->getId());
         }
 
-        $encodes = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers, $encodes);
+        $notActivatedShip = [];
+        if ($userId == $this->game->getCurrentUserId()) {
+            $fleet = new Fleet($ships, $userId);
+            /** @var Ship $notActivatedShip */
+            $notActivatedShip = $fleet->getNotActivatedShip();
+        }
 
-        return ($serializer->serialize($ships, 'json'));
+        return new JsonResponse([
+            'ships' => $this->jsonSerializer->serialize($ships),
+            'notActivatedShip' => $this->jsonSerializer->serialize($notActivatedShip),
+            'obstacles' => $this->jsonSerializer->serialize($this->obstacles)
+        ]);
     }
 
     /**
@@ -155,5 +145,24 @@ class GameController extends BaseController
             $this->entityManager->flush();
         }
         return $this->redirect('lobby');
+    }
+
+    private function getView($form)
+    {
+        if ($form)
+            return $form->createView();
+        return (false);
+    }
+
+    private function createLeaveForm() {
+        return ($this->createFormBuilder()
+            ->add('leave', SubmitType::class)
+            ->setAction($this->generateUrl('leave'))
+            ->getForm());
+    }
+    private function createTurnForm() {
+        return $this->createForm(GameTurn::class, null, [
+            'action' => $this->generateUrl('turn')
+        ]);
     }
 }

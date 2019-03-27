@@ -98,10 +98,12 @@ class LobbyController extends BaseController
         $user = $this->getUser();
         $userId = $user->getId();
 
-        if ($form->get('create game')->isClicked())
+        if ($form->get('create game')->isClicked()) {
             $game = $this->onCreateGame($userId);
-        else
+        }
+        else {
             $game = $this->onSearch($userId);
+        }
 
         if ($game == null) {
             $this->addFlash('error', 'there are not available games :( ');

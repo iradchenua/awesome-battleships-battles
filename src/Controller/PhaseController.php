@@ -7,6 +7,8 @@
  */
 
 namespace App\Controller;
+use Symfony\Component\Form\Extension\HttpFoundation\HttpFoundationRequestHandler;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +19,10 @@ use App\Entity\Fleet;
 use App\FormHandler\Handler;
 use App\FormHandler\PhaseHandlersFactory;
 
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
 class PhaseController extends BaseController
 {
     /**
@@ -24,15 +30,19 @@ class PhaseController extends BaseController
      */
     private $formPhaseFactory;
     protected $obstacles;
+    private $jsonSerializer;
 
     public function __construct(
         \App\Repository\GameRepository $gameRepository,
         \Doctrine\ORM\EntityManagerInterface $entityManager,
         \App\Form\Phase\FormPhaseFactory $formPhaseFactory,
-        \App\Repository\ObstacleRepository $obstacleRepository
+        \App\Repository\ObstacleRepository $obstacleRepository,
+        \App\Service\JsonSerializer $jsonSerializer
     ) {
         $this->formPhaseFactory = $formPhaseFactory;
         $this->obstacles = $obstacleRepository->getObstacles();
+        $this->jsonSerializer = $jsonSerializer;
+
         parent::__construct($gameRepository, $entityManager);
     }
 
@@ -60,12 +70,13 @@ class PhaseController extends BaseController
         $ship = $fleet->getNotActivatedShip();
 
         if (!$ship) {
-            return $this->redirectToRoute('game');
+            return $this->redirectToRoute('ships');
         }
 
-        $form = $this->formPhaseFactory->createPhaseForm($ship);
+        $phase = $ship->getPhase();
+        $form = $this->formPhaseFactory->createPhaseForm($phase);
 
-        $handler = PhaseHandlersFactory::createNew($ship->getPhase(), [
+        $handler = PhaseHandlersFactory::createNew($phase, [
             'form' => $form,
             'fleet' => $fleet,
             'ship' => $ship,
@@ -81,16 +92,21 @@ class PhaseController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $message = $handler->handle();
+        } else {
+            return new JsonResponse([], 403);
         }
-
         $message = $ship->getIsLive() ? $message : $ship->getName() . ' is dead';
 
         if (is_string($message)) {
-            $this->addFlash('error', $message);
+            $message = '{"fail": ' . '"' . $message . '"}';
         } else {
-            $this->addFlash('success', 'done');
+            $message = '{"success": "success"}';
         }
 
-        return $this->redirectToRoute('game');
+        return new JsonResponse([
+            'ships' => $this->jsonSerializer->serialize($ships),
+            'notActivatedShip' => $this->jsonSerializer->serialize($ship),
+            'message' => $message
+        ]);
     }
 }

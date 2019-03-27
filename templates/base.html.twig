@@ -13,16 +13,12 @@
         {% endblock %}
         {% block flash %}
             {% if app.request.hasPreviousSession %}
-                {% for message in app.flashes('error') %}
-                    <div class="flash-notice">
-                        <h3 style="color: red">{{ message }}</h3>
-                    </div>
-                {% endfor %}
-                {% for message in app.flashes('success') %}
-                    <div class="flash-notice">
-                        <h3 style="color: green">{{ message }}</h3>
-                    </div>
-                {% endfor %}
+                <div class="flash-notice">
+                        <h3 id="flash-fail" style="color: red"></h3>
+                </div>
+                <div class="flash-notice">
+                    <h3 id="flash-success" style="color: green"></h3>
+                </div>
             {% endif %}
         {% endblock flash %}
         {% block javascripts %}

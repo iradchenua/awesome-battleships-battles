@@ -22,7 +22,7 @@ use App\Entity\Ship;
 class BlueShip extends Ship
 {
     protected const CLASS_NAME = 'blueship';
-    protected const IMG = 'images/blue.png';
+    protected const IMG = 'blue';
     protected const HANDLING = 4;
     protected const PP = 10;
     protected const SPEED = 15;

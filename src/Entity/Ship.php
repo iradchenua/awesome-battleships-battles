@@ -117,7 +117,7 @@ abstract class Ship extends EntityOnMap
      *
      * @ORM\Column(name="phase", type="integer", nullable=false)
      */
-    protected $phase = self::ORDER_PHASE;
+    protected $phase = self::SHOOT_PHASE;
 
     /**
      * @var int
@@ -247,7 +247,7 @@ abstract class Ship extends EntityOnMap
             return;
         }
 
-        $this->setCanTurn(false);
+        //$this->setCanTurn(false);
         $oldDirX = $this->getDirX();
         $oldDirY = $this->getDirY();
 
@@ -295,14 +295,12 @@ abstract class Ship extends EntityOnMap
         $rect['oppositeX'] = $rect['x'] + $this->getWidth();
         $rect['oppositeY'] = $rect['y'] - $this->getHeight();
 
-        $shift = $this->dirY * ($rect['width'] - $rect['height']) / 2;
-
-        $rect['x'] += $shift;
-        $rect['y'] += $shift;
-        $rect['oppositeX'] += $shift;
-        $rect['oppositeY'] += $shift;
-
-        if ($this->dirX === 0) {
+        if ($this->dirY !== 0) {
+            $shift = ($rect['width'] - $rect['height']) / 2;
+            $rect['x'] += $shift;
+            $rect['y'] += $shift;
+            $rect['oppositeX'] -= $shift;
+            $rect['oppositeY'] -= $shift;
             $width = $rect['width'];
             $rect['width'] = $rect['height'];
             $rect['height'] = $width;
@@ -364,7 +362,7 @@ abstract class Ship extends EntityOnMap
         }
 
         $this->setIsStationery(false);
-        $this->setCanTurn(false);
+       // $this->setCanTurn(false);
 
         $this->setX($this->getX() + $numberOfCeils * $this->getDirX());
         $this->setY($this->getY() + $numberOfCeils * $this->getDirY());
@@ -448,7 +446,7 @@ abstract class Ship extends EntityOnMap
     {
         $this->setSpeed(static::SPEED);
         $this->setIsActivated(true);
-        $this->setPhase(Ship::ORDER_PHASE);
+        $this->setPhase(Ship::SHOOT_PHASE);
 
         if ($this->getMoved() > 0) {
             $isStationery = $this->getIsStationery();

@@ -1,27 +1,61 @@
+<script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
 <script>
-    class EntityOnMap {
-        constructor(params) {
-            for (let prop in params) {
-                if (params.hasOwnProperty(prop)) {
-                    this[prop] = params[prop];
-                }
-            }
-            this.image = new Image();
-            this.image.src = this.img;
-            this.image.onload = this.draw.bind(this);
-        }
-        draw() {
-            this.drawer.drawEntityOnMap(this);
-        }
-    }
-    class Obstacle extends EntityOnMap {
+    class EntityOnMap extends Phaser.GameObjects.Sprite {
+        constructor(scene, x, y, props) {
+            super(scene, x, y, props.img);
 
-    }
-    class SpaceShip extends EntityOnMap {
-        draw() {
-            this.drawer.drawShip(this);
+            this.id = props.id;
+
+            this.displayWidth = props.width;
+            this.displayHeight = props.height;
+
+            this._shift();
+
+            this.scene = scene;
+            this.scene.add.existing(this);
         }
-        getAngle() {
+        destroy() {
+            super.destroy();
+        }
+        _shift() {
+            this.x += this.displayWidth / 2;
+            this.y += this.displayHeight / 2;
+        }
+        update(props) {
+            this.x = props.x;
+            this.y = props.y;
+
+            this._shift();
+        }
+    }
+
+    class Obstacle extends EntityOnMap {
+        constructor(scene, x, y, props) {
+            super(scene, x, y, props);
+        }
+    }
+
+    class SpaceShip extends EntityOnMap {
+        constructor(scene, x, y, props) {
+            super(scene, x, y, props);
+            this._setDir(props);
+        }
+        update(props) {
+            super.update(props);
+
+            if (props.hullPoints <= 0) {
+                this.destroy();
+                return ;
+            }
+            this._setDir(props);
+        }
+        _setDir(props) {
+            this.dirY = props.dirY;
+            this.dirX = props.dirX;
+
+            this.rotation = this._getAngle();
+        }
+        _getAngle() {
             if (this.dirX === 0) {
                 return this.dirY === 1 ? -Math.PI / 2 : Math.PI / 2;
             }
@@ -31,112 +65,202 @@
         }
     }
 
-    class Drawer {
-        constructor(params) {
-            this.canvas = params.canvas;
-            this.ctx = this.canvas.getContext('2d',  { alpha: false });
-            this.xStep = this.canvas.width / params.gameFieldWidth;
-            this.yStep = this.canvas.height / params.gameFieldHeight;
-            this.gameFieldWidth = params.gameFieldWidth;
-            this.gameFieldHeight = params.gameFieldHeight;
+    class Game extends Phaser.Game {
+        constructor(props) {
+            super(props);
+            this.width = props.width;
+            this.height = props.height;
 
-            //this.drawGrid();
+            this.gameFieldWidth = props.gameFieldWidth;
+            this.gameFieldHeight = props.gameFieldHeight;
+
+            this.xStep = this.width / this.gameFieldWidth;
+            this.yStep = this.height / this.gameFieldHeight;
+
+            this.shipsFromServer = props.shipsFromServer;
+            this.obstaclesFromServer = props.obstaclesFromServer;
         }
-        drawGrid() {
-            const canvas = this.canvas;
-            this.ctx.strokeStyle = "#FFFFFF";
-            console.log('hi bitches');
-            for(let x = 0; x < canvas.width ; x += this.xStep)
-                this.ctx.strokeRect(x, 0, this.xStep, canvas.height);
-            for(let y = 0; y < canvas.width ; y += this.yStep)
-                this.ctx.strokeRect(0, y, canvas.width, this.yStep);
-        }
-        xToCanvasCords(x) {
+
+        _xToCanvasCords(x) {
             return this.xStep * (x + this.gameFieldWidth / 2);
         }
-        yToCanvasCords(y) {
-            return this.yStep * (-y +  this.gameFieldHeight / 2);
+        _yToCanvasCords(y) {
+            return this.yStep * (-y + this.gameFieldHeight / 2);
         }
-        drawEntityOnMap(entity) {
-            const width = this.xStep * entity.width;
-            const height =  this.yStep * entity.height;
-
-            let x = this.xToCanvasCords(entity.x);
-            let y = this.yToCanvasCords(entity.y);
-
-
-            this.ctx.strokeStyle = '#00FF00';
-            this.ctx.strokeRect(x, y,
-                width, height);
-            this.ctx.drawImage(entity.image,
-                x, y,
-                width, height);
+        _drawAllBounds() {
+            this.graphics.clear();
+            this.obstacles.forEach(obstacle => this._drawBounds(obstacle));
+            this.ships.forEach(obstacle => this._drawBounds(obstacle));
         }
-        drawShip(ship) {
-            const width = this.xStep * ship.width;
-            const height = this.yStep * ship.height;
+        _drawBounds(entityOnMap) {
+            this.graphics.lineStyle(3, 0xffff37);
+            this.graphics.strokeRectShape(entityOnMap.getBounds());
+        }
+        _stretchProps(props) {
+            props.xCanvas = this._xToCanvasCords(props.x);
+            props.yCanvas = this._yToCanvasCords(props.y);
 
-            let x = this.xToCanvasCords(ship.x);
-            let y = this.yToCanvasCords(ship.y);
+            props.width *= this.xStep;
+            props.height *= this.yStep;
+        }
+        createObstacles(scene) {
+            this.obstacles = [];
+            const obstaclesFromServer = this.obstaclesFromServer;
 
-            this.ctx.save();
+            obstaclesFromServer.forEach((obstacleProps) => {
+                this._stretchProps(obstacleProps);
 
-            this.ctx.translate(x + width / 2, y + height / 2);
-            this.ctx.rotate(ship.getAngle());
+                this.obstacles[obstacleProps.id] = new Obstacle(scene,
+                                                                obstacleProps.xCanvas,
+                                                                obstacleProps.yCanvas,
+                                                                obstacleProps);
 
-            x = -width / 2;
-            y = -height / 2;
-            this.ctx.strokeStyle = ship.name.split('ship')[0];
-            this.ctx.strokeRect(x, y,
-                                width, height);
-            this.ctx.drawImage(ship.image,
-                                x, y,
-                                width, height);
-            this.ctx.restore();
+                this._drawBounds(this.obstacles[obstacleProps.id]);
+            });
+            return this.obstacles;
+        }
+
+        createShips(scene) {
+            this.ships = [];
+            const shipsFromServer = this.shipsFromServer;
+            for (let userId in shipsFromServer) {
+                if (shipsFromServer.hasOwnProperty(userId)) {
+                    shipsFromServer[userId].forEach((shipProps) => {
+                        if (shipProps.hullPoints <= 0) {
+                            return;
+                        }
+                        this._stretchProps(shipProps);
+
+                        this.ships[shipProps.id] = new SpaceShip(scene,
+                                                                    shipProps.xCanvas,
+                                                                    shipProps.yCanvas,
+                                                                    shipProps);
+
+                        this._drawBounds(this.ships[shipProps.id]);
+                    });
+                }
+            }
+            return this.ships;
+        }
+        updateShips(shipsFromServer) {
+            for(let userId in shipsFromServer) {
+                if (shipsFromServer.hasOwnProperty(userId)) {
+                    shipsFromServer[userId].forEach((shipProps) => {
+                        shipProps.x = this._xToCanvasCords(shipProps.x);
+                        shipProps.y = this._yToCanvasCords(shipProps.y);
+
+                        this.ships[shipProps.id].update(shipProps);
+                    });
+                }
+            }
+            this._drawAllBounds();
         }
     }
 
-    function parseJSON(str) {
-        return (JSON.parse(str.replace(/&quot;|\\&quot;/g, '"')));
+    function preload() {
+        this.load.image('bg', 'images/space.jpg');
+        this.load.image('red', 'images/red.png');
+        this.load.image('blue', 'images/blue.png');
+        this.load.image('island', 'images/island.png');
     }
 
-    function createShips(shipsFromServer, drawer) {
-        for(let prop in shipsFromServer) {
-            if (shipsFromServer.hasOwnProperty(prop)) {
-                shipsFromServer[prop].forEach(function(shipParams) {
-                    shipParams.drawer = drawer;
-                    new SpaceShip(shipParams);
-                });
+    function create() {
+        this.bg = this.add.image(0, 0, 'bg');
+        this.graphics = this.add.graphics({ fillStyle: { color: 0x0000ff } });
+
+        this.game.graphics = this.graphics;
+
+        this.ships = this.game.createShips(this);
+        this.obstacles = this.game.createObstacles(this);
+    }
+
+    function update() {
+
+    }
+    function updateGamePanel(activatedShip)
+    {
+
+    }
+    function updateFlash(message)
+    {
+        $('#flash-success').text('');
+        $('#flash-fail').text('');
+        const jsonMessage = JSON.parse(message);
+        for(let key in jsonMessage) {
+            if (jsonMessage.hasOwnProperty(key)) {
+                $('#flash-' + key   ).text(jsonMessage[key])
             }
         }
-    }
 
-    function createObstacles(ObstaclesFromServer, drawer) {
-        ObstaclesFromServer.forEach(function(ObstacleParams) {
-            console.log(ObstacleParams);
-            ObstacleParams.drawer = drawer;
-            new Obstacle(ObstacleParams);
-        });
     }
+    $.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
 
     $(document).ready(function() {
-        const jsInfo = $('#jsInfo');
+        let game = false;
 
-        const GAME_FIELD_WIDTH = jsInfo.data('gameFieldWidth');
-        const GAME_FIELD_HEIGHT = jsInfo.data('gameFieldHeight');
-
-        const drawer = new Drawer({
-            "canvas": $('#cnv').get(0),
-            "gameFieldWidth": GAME_FIELD_WIDTH,
-            "gameFieldHeight": GAME_FIELD_HEIGHT
+        $.post("{{ path('init') }}", function (data) {
+            let config = {
+                type: Phaser.CANVAS,
+                parent: 'canvas-parent',
+                width: data.width,
+                height: data.height,
+                gameFieldWidth: data.gameFieldWidth,
+                gameFieldHeight: data.gameFieldHeight,
+                obstaclesFromServer:  JSON.parse(data.obstacles),
+                scene: {
+                    'preload': preload,
+                    'create': create,
+                    'update': update
+                }
+            };
+            $.post("{{ path('ships') }}", function(data) {
+                config.shipsFromServer = JSON.parse(data.ships);
+                config.notActivatedShip = JSON.parse(data.notActivatedShip);
+                game = new Game(config);
+                let phaseDiv = $("#phase" + config.notActivatedShip.phase);
+                phaseDiv.css({display: 'inherit'});
+            });
         });
 
-        const shipsFromServer = parseJSON("{{ ships }}");
-        const obstaclesFromServer = parseJSON("{{ obstacles }}");
+        $('#form-container form button').click(function(e) {
+            const button = $(this);
+            let form = button.parent().parents('form').first();
+            form.attr({'buttonName': button.attr('name')});
+        });
 
+        $('#form-container form').on('submit', function(e) {
+            e.preventDefault();
+            if (!game) {
+                return false;
+            }
+            const form = $(this);
+            const url = form.attr('action');
+            let data = form.serializeObject();
+            data[form.attr('buttonName')] = '';
 
-        createShips(shipsFromServer, drawer);
-        createObstacles(obstaclesFromServer, drawer);
-
+            $.post({
+                'url': url,
+                'data': data
+            }, function(response) {
+                game.updateShips(JSON.parse(response.ships));
+                updateFlash(response.message);
+            }, 'JSON').fail(function(response) {
+            });
+        });
     });
 </script>

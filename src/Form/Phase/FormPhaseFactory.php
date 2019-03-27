@@ -35,20 +35,15 @@ class FormPhaseFactory
         Ship::SHOOT_PHASE => Shoot::class
     ];
 
-    public function createPhaseFormView($ship)
+    public function createPhaseFormView($phase)
     {
-        if ($phaseForm = $this->createPhaseForm($ship)) {
+        if ($phaseForm = $this->createPhaseForm($phase)) {
             return $phaseForm->createView();
         }
-
         return false;
     }
-
-    public function createPhaseForm($ship)
+    public function createPhaseForm($phase)
     {
-        if (!$ship)
-            return false;
-        $phase = $ship->getPhase();
         return $this->formFactory->create($this->phases[$phase], null, [
             'action' => $this->router->generate('phase')
         ]);

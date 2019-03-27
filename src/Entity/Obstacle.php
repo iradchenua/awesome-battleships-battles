@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 class Obstacle extends EntityOnMap
 {
-    protected const IMG = "images/island.png";
+    protected const IMG = "island";
     protected const WIDTH = 50;
     protected const HEIGHT = 50;
 

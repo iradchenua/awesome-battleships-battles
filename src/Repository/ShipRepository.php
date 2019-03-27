@@ -24,14 +24,12 @@ class ShipRepository extends ServiceEntityRepository
     {
         $ships = [];
         $shipsFromBase = $this->createQueryBuilder('s')
-            ->andWhere('s.gameId = :gameId and s.userId = :userId and s.isLive = :isLive')
-            ->setParameter('isLive', true)
+            ->andWhere('s.gameId = :gameId and s.userId = :userId')
             ->setParameter('gameId', $gameId)
             ->setParameter('userId', $userId)
             ->getQuery()
             ->getResult();
         foreach($shipsFromBase as $ship) {
-
             $ships[] = shipFactory::createShip($ship->getName(), $ship->getAll());
         }
         return $ships;
@@ -39,16 +37,16 @@ class ShipRepository extends ServiceEntityRepository
     public function getShipsForGame($gameId)
     {
         $shipsFromBase = $this->createQueryBuilder('s')
-            ->andWhere('s.gameId = :gameId and s.hullPoints > :minHullPoints')
-            ->setParameter('minHullPoints', 0)
+            ->andWhere('s.gameId = :gameId')
             ->setParameter('gameId', $gameId)
             ->getQuery()
             ->getResult();
         $ships = [];
         foreach($shipsFromBase as $ship) {
             $userId = $ship->getUserId();
-            if (!isset($ships[$userId]))
+            if (!isset($ships[$userId])) {
                 $ships[$userId] = [];
+            }
 
             $ships[$userId][] = shipFactory::createShip($ship->getName(), $ship->getAll());
         }
