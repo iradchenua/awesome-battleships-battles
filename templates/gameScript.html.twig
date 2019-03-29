@@ -1,5 +1,7 @@
 <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
 <script>
+    const PHASES=['order', 'movement', 'shoot'];
+
     class EntityOnMap extends Phaser.GameObjects.Sprite {
         constructor(scene, x, y, props) {
             super(scene, x, y, props.img);
@@ -38,6 +40,7 @@
     class SpaceShip extends EntityOnMap {
         constructor(scene, x, y, props) {
             super(scene, x, y, props);
+            this.name = name;
             this._setDir(props);
         }
         update(props) {
@@ -177,9 +180,41 @@
     function update() {
 
     }
-    function updateGamePanel(activatedShip)
-    {
 
+    function phaseShow(notActivatedShip) {
+        $('#no-free-ship').hide();
+        for(let i = 0; i < PHASES.length; i++) {
+            $('#phase' + i).hide();
+        }
+        if (Array.isArray(notActivatedShip))
+        {
+            $('#no-free-ship').show();
+            return ;
+        }
+        $("#phase" + notActivatedShip.phase).show();
+    }
+    function dumpShip(notActivatedShip)
+    {
+        let shipDiv = $('#ship');
+        shipDiv.empty();
+        shipDiv.hide();
+
+        if (Array.isArray(notActivatedShip)) {
+            return ;
+        }
+        shipDiv.append('<h3>' + notActivatedShip.name + '</h3>');
+        shipDiv.append('<img src="images/' + notActivatedShip.img + '.png"' + '>');
+        shipDiv.append('<p>phase: ' + PHASES[notActivatedShip.phase] + '</p>');
+        for(let prop in notActivatedShip) {
+            if (notActivatedShip.hasOwnProperty(prop) &&
+                prop !== 'img' &&
+                prop !== 'name' &&
+                prop !=='phases')
+            {
+                shipDiv.append('<p>' + prop + ': ' + notActivatedShip[prop] + '</p>');
+            }
+        }
+        shipDiv.show();
     }
     function updateFlash(message)
     {
@@ -211,7 +246,7 @@
     };
 
     $(document).ready(function() {
-        let game = false;
+        let game;
 
         $.post("{{ path('init') }}", function (data) {
             let config = {
@@ -232,8 +267,8 @@
                 config.shipsFromServer = JSON.parse(data.ships);
                 config.notActivatedShip = JSON.parse(data.notActivatedShip);
                 game = new Game(config);
-                let phaseDiv = $("#phase" + config.notActivatedShip.phase);
-                phaseDiv.css({display: 'inherit'});
+                dumpShip(config.notActivatedShip);
+                phaseShow(config.notActivatedShip);
             });
         });
 
@@ -251,15 +286,22 @@
             const form = $(this);
             const url = form.attr('action');
             let data = form.serializeObject();
+
             data[form.attr('buttonName')] = '';
 
-            $.post({
+            $.post(
+            {
                 'url': url,
                 'data': data
             }, function(response) {
-                game.updateShips(JSON.parse(response.ships));
+                console.log(response);
                 updateFlash(response.message);
+                game.updateShips(JSON.parse(response.ships));
+                response.notActivatedShip = JSON.parse(response.notActivatedShip);
+                dumpShip(response.notActivatedShip);
+                phaseShow(response.notActivatedShip);
             }, 'JSON').fail(function(response) {
+                console.log('fuck you hacker!!!');
             });
         });
     });

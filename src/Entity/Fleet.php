@@ -27,7 +27,7 @@ class Fleet
             if (!$ship->getIsActivated())
                 return $ship;
         }
-        return false;
+        return [];
     }
     public function deactiveAllShips($entityManager)
     {

@@ -59,6 +59,10 @@ class PhaseController extends BaseController
         $this->game = $this->gameRepository
             ->getGameForUserId($userId);
 
+        if ($userId !== $this->game->getCurrentUserId()) {
+            return new JsonResponse([], 403);
+        }
+
         if ($this->game->getStatus() != Game::STATUS_PLAY) {
             return $this->redirectToRoute('game');
         }
@@ -69,8 +73,12 @@ class PhaseController extends BaseController
         $fleet = new Fleet($ships, $userId);
         $ship = $fleet->getNotActivatedShip();
 
-        if (!$ship) {
-            return $this->redirectToRoute('ships');
+        if ($ship == []) {
+            return new JsonResponse([
+                'ships' => $this->jsonSerializer->serialize($ships),
+                'notActivatedShip' => $this->jsonSerializer->serialize($ship),
+                'message' => '{"success": "success"}'
+            ]);
         }
 
         $phase = $ship->getPhase();
@@ -102,7 +110,7 @@ class PhaseController extends BaseController
         } else {
             $message = '{"success": "success"}';
         }
-
+        $ship = $ship->getIsActivated() ? [] : $ship;
         return new JsonResponse([
             'ships' => $this->jsonSerializer->serialize($ships),
             'notActivatedShip' => $this->jsonSerializer->serialize($ship),

@@ -22,11 +22,11 @@ class JsonSerializer
         $normalizers = [new ObjectNormalizer()];
         $this->serializer = new Serializer($normalizers, $encodes);
     }
-
     public function serialize($entityOnMap)
     {
         return $this->serializer->serialize($entityOnMap, 'json', [
             'attributes' => [
+                'name',
                 'id',
                 'hullPoints',
                 'x',

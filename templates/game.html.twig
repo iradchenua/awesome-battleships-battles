@@ -18,16 +18,15 @@
         {% endif %}
         <div id="gamePhaseForm">
         </div>
-       {# {% if notActivatedShip %}
-            {{ include('shipDump.html.twig', {'ship': notActivatedShip}) }}
-        {% else %}
-            <p>'There are not free ship'</p>
-        {% endif %}#}
+
+        <div id="ship">
+        </div>
         {%  block flash %}
             {{ parent() }}
         {% endblock %}
         <h3 id="phase-name"></h3>
         <div id="form-container">
+            <p id="no-free-ship">No free ship</p>
             <div id="phase{{ constant('\\App\\Entity\\Ship::ORDER_PHASE') }}" style="display: none">
                 {{ form(orderPhase) }}
             </div>

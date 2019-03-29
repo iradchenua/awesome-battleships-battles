@@ -9,9 +9,6 @@ canvas {
     float: left;
     width: 300px;
 }
-#jsInfo {
-    display: none;
-}
 
 #ship {
     border-style: solid;
