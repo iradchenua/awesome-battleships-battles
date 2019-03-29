@@ -10,7 +10,6 @@
         <p>user_id1: {{ userId1 }}</p>
         <p>user_id2: {{ userId2 ? userId2 : 'waiting' }}</p>
         {{ form(leaveForm) }}
-
         {%  if turnForm %}
             {{ form(turnForm) }}
         {% else %}
@@ -18,7 +17,6 @@
         {% endif %}
         <div id="gamePhaseForm">
         </div>
-
         <div id="ship">
         </div>
         {%  block flash %}
@@ -42,5 +40,6 @@
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
-    {{ include('gameScript.html.twig') }}
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
+    <script src="{{ asset('js/script.js') }}"></script>
 {% endblock %}

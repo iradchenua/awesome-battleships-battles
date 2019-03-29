@@ -21,10 +21,16 @@ class PhaseHandler extends Handler
      * @var \App\Entity\Ship
      */
     protected $ship;
+    protected $ships;
+    protected $obstacles;
 
     public function __construct($params)
     {
         parent::__construct($params);
+
+        $this->ships = $params['ships'];
+        $this->obstacles = $params['obstacles'];
+
         $this->ship = $params['ship'];
     }
     protected function onEndShipTurn()

@@ -68,7 +68,7 @@ class PhaseController extends BaseController
         }
 
         $ships = $doctrine->getRepository(Ship::class)
-            ->getShipsForGame($this->game->getId());
+                            ->getShipsForGame($this->game->getId());
 
         $fleet = new Fleet($ships, $userId);
         $ship = $fleet->getNotActivatedShip();

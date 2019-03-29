@@ -8,6 +8,7 @@
 
 namespace App\Form\Phase;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
@@ -16,6 +17,9 @@ class Shoot extends GamePhase
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            ->add('toShoot', HiddenType::class, [
+                'data' => 'no target'
+            ])
             ->add('shoot', SubmitType::class);
 
         parent::buildForm($builder, $options);

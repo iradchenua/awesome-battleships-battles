@@ -23,8 +23,6 @@ class MoveHandler extends PhaseHandler
     public function __construct($params)
     {
         parent::__construct($params);
-        $this->ships = $params['ships'];
-        $this->obstacles = $params['obstacles'];
 
         $newNameHandlersPairs = [
             'rotate left' => 'onRotate',
@@ -57,8 +55,10 @@ class MoveHandler extends PhaseHandler
     protected function onMove()
     {
         $numberOfCeils = $this->form->get('numberOfCeils')->getData();
-        if (!is_numeric($numberOfCeils))
+        if (!is_numeric($numberOfCeils)) {
             return 'invalid number of ceils';
+        }
+
         $canMove = true;
         if ($this->ship) {
             $canMove =  $this->ship->move($numberOfCeils);
